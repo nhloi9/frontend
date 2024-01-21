@@ -155,16 +155,13 @@ const CallModal = () => {
 
   //create peer object
   useEffect(() => {
-    const peer = new Peer(
-      socket.socket.id
-      //   {
-      //   // host: 'localhost',
-      //   host: 'horizon-backend-baxc.onrender.com',
-      //   port: 9000,
-      //   path: '/',
-      //   secure: true
-      // }
-    )
+    const peer = new Peer(socket.socket.id, {
+      // host: 'localhost',
+      host: 'horizon-backend-baxc.onrender.com',
+      port: 9000,
+      path: '/',
+      secure: true
+    })
 
     peer.on('call', function (call) {
       callsRef.current.push(call)
