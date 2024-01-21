@@ -10,7 +10,7 @@ import {
   getImageOfConversation,
   getNameOfConversation
 } from '../../utils/conversation'
-import { defaulAvatar } from '../../Constants'
+import { backendHost, defaulAvatar } from '../../Constants'
 import { socket } from '../../socket'
 import toast from 'react-hot-toast'
 import { callTypes } from '../../Reduxs/Types/callType'
@@ -157,7 +157,7 @@ const CallModal = () => {
   useEffect(() => {
     const peer = new Peer(socket.socket.id, {
       // host: 'localhost',
-      host: 'horizon-backend-baxc.onrender.com',
+      host: backendHost,
       port: 9000,
       path: '/',
       secure: true
@@ -329,7 +329,7 @@ const CallModal = () => {
   }
 
   return (
-    <div className=' fixed top-0 bottom-0 left-0 right-0 z-[999999999999999999999] bg-[#00000069] flex justify-center items-center text-gray-200'>
+    <div className=' fixed top-0 bottom-0 left-0 right-0 z-[99] bg-[#00000069] flex justify-center items-center text-gray-200'>
       {!answere && (
         <audio
           hidden
