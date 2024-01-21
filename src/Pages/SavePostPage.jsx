@@ -27,17 +27,27 @@ const SavePostPage = () => {
     <div>
       <Header />
 
-      <div className=' flex justify-center bg-gray-100 mt-[50px] '>
-        <div className='hidden fixed h-screen xl:block left-0 w-[25%] max-w-[300px]'>
-          <LeftSide type='save'> </LeftSide>
+      <div className=' w-full pt-[60px] bg-gray-200 min-h-[100vh] flex relative '>
+        <div className=' sticky h-[calc(100vh-60px)] top-[60px] xl:block left-0  w-[25%] max-w-[300px]'>
+          <LeftSide type='save' />
         </div>
-        <div className='w-full  max-w-[600px] rounded-xl min-h-screen   '>
-          <br />
-          <Posts posts={posts} />
-          <br />
-          {/* <CardSection></CardSection> */}
-          {/* <Main></Main> */}
-          {/* </div> */}
+        <div className='w-[calc(100%-35px)]'>
+          <div className='w-full '>
+            <div className='w-full py-5 bg-white shadow'>
+              <div className='w-[70%] mx-auto'>
+                <h1 className='text-[26px]'>Saved Posts</h1>
+                <p className='text-gray-500'>
+                  You can review the list of saved posts
+                </p>
+              </div>
+            </div>
+            <div className=' mx-auto w-[90%] max-w-[700px] my-5 '>
+              <Posts posts={posts} />
+            </div>
+          </div>
+          {/* <div className='w-[70%] mx-auto my-5 '>
+            <Posts posts={posts} />
+          </div> */}
         </div>
       </div>
     </div>

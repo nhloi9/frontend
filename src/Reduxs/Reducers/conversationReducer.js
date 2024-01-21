@@ -10,6 +10,11 @@ export const conversationReducer = createReducer(
 			.addCase(conversationTypes.GET_ALL_CONVERSATION_SUCCESS, (state, action) => {
 				state.conversations = action.payload;
 			})
+			.addCase(conversationTypes.DELTE, (state, action) => {
+				state.conversations = state.conversations.filter(
+					(item) => item?.id !== action.payload
+				);
+			})
 			.addCase(conversationTypes.ADD_OR_UPDATE_CONVERSATION, (state, action) => {
 				state.conversations = addOrUpdateToArray(
 					state.conversations,

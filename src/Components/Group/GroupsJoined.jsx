@@ -25,7 +25,7 @@ const GroupsJoined = () => {
             {requests
               ?.filter(item => item?.status === 'accepted')
               ?.map(({ group }) => (
-                <div className='rounded-md bg-white h-min p-3'>
+                <div className='rounded-md bg-white h-min p-3 '>
                   <div
                     className='flex items-center gap-2 '
                     // onClick={() => navigate('/groups/' + post?.group?.id)}

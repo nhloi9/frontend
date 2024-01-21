@@ -12,6 +12,8 @@ import { groupTypes } from '../Reduxs/Types/groupType'
 
 const CreateGroupPage = () => {
   const { requests } = useSelector(state => state.friend)
+  const [name, setName] = useState('')
+  const [privacy, setPrivacy] = useState(null)
 
   const { user } = useSelector(state => state.auth)
   const [selected, setSelected] = useState([])
@@ -89,13 +91,19 @@ const CreateGroupPage = () => {
                   {
                     type: 'string',
                     min: 2,
-                    max: 30,
-                    message:
-                      'Group name must be at least 2 characters and shorter than 30 characters '
+
+                    message: 'Group name must be at least 2 characters '
                   }
                 ]}
               >
-                <Input className='w-full !h-[60px]' />
+                <Input
+                  onChange={e => {
+                    setName(e.target.value)
+                  }}
+                  maxLength={100}
+                  showCount
+                  className='w-full !h-[60px]'
+                />
               </Form.Item>
 
               <Form.Item
@@ -108,6 +116,9 @@ const CreateGroupPage = () => {
                 ]}
               >
                 <Select
+                  onChange={value => {
+                    setPrivacy(value)
+                  }}
                   placeholder='Choose privacy'
                   // defaultValue={null}
                   style={{
@@ -217,7 +228,7 @@ const CreateGroupPage = () => {
           <div className=' w-full h-full rounded-md shadow-lg bg-white p-4 '>
             <p className='font-bold'>Group preview</p>
             <div className='w-full h-[calc(100%-30px)] mt-2 border overflow-y-scroll'>
-              <GroupPreview />
+              <GroupPreview name={name} privacy={privacy} />
             </div>
           </div>
         </div>
@@ -226,7 +237,7 @@ const CreateGroupPage = () => {
   )
 }
 
-const GroupPreview = () => {
+const GroupPreview = ({ name, privacy }) => {
   return (
     <div className='w-full h-full  rounded-md'>
       <img
@@ -236,10 +247,24 @@ const GroupPreview = () => {
       />
       <div className='px-4 pt-5 pb-7 shadow-md'>
         <h1 className='text-[24px] font-[900] text-gray-500 pb-2'>
-          Group name
+          {name?.trim() ? name.trim() : 'Group name'}
         </h1>
         <p className='text-gray-600 mb-7'>
-          Group privacy <span>. 1 member</span>
+          {privacy ? (
+            <>
+              <span>
+                {privacy === 'public' ? (
+                  <MdOutlinePublic className='!translate-y-[3px]' />
+                ) : (
+                  <FaLock className='!translate-y-[3px]' />
+                )}
+              </span>{' '}
+              {' ' + privacy + ' group  '}
+            </>
+          ) : (
+            'Group privacy'
+          )}
+          <span>. 1 member</span>
         </p>
         <div className='flex px-3 text-gray-600 font-[600] py-4 border-t-[1px] border-gray-300 gap-5'>
           <p>About</p>

@@ -33,7 +33,6 @@ import {
 	getAllGroupRequestsOfUser,
 	getAllOwnGroupOfUser,
 } from './Reduxs/Actions/groupAction';
-import CreateLocation from './Pages/CreateLocation';
 import AdminPage from './Pages/AdminPage';
 import CallModal from './Components/Message/CallModal';
 import FriendsPage from './Pages/FriendsPage';
@@ -42,20 +41,17 @@ import GroupsJoinedPage from './Pages/GroupsJoinedPage';
 import {getSavePostsAction} from './Reduxs/Actions/postAction';
 import SavePostPage from './Pages/SavePostPage';
 import SearchPage from './Pages/SearchPage';
+import DisCoverPage from './Pages/DisCoverPage';
+import {socket} from './socket';
+import HashtagPage from './Pages/HashtagPage';
 function App() {
 	const dispatch = useDispatch();
 	const {darkAlgorithm, defaultAlgorithm} = theme;
 	const themeApp = useSelector((state) => state.theme);
 	const {user, socketToken} = useSelector((state) => state.auth);
 	const {call} = useSelector((state) => state);
+	const {posts} = useSelector((state) => state.post);
 	// const {activePost} = useSelector((state) => state.homePost);
-
-	console.log(
-		document.cookie
-			.split('; ')
-			.find((row) => row.startsWith('token'))
-			?.split('=')[1]
-	);
 
 	useEffect(() => {
 		dispatch(checkAuthAction());
@@ -69,6 +65,16 @@ function App() {
 		}
 	}, [themeApp]);
 
+	const firstPost = posts[0];
+	const lastPost = posts[posts.length - 1];
+
+	useEffect(() => {
+		socket.emit(
+			'joinPosts',
+			posts.map((post) => post.id)
+		);
+	}, [firstPost?.id, lastPost?.id, posts?.length]);
+
 	useEffect(() => {
 		if (user?.id) {
 			// dispatch(getHomePostsAction());
@@ -79,6 +85,7 @@ function App() {
 			dispatch(getAllOwnGroupOfUser());
 			dispatch(getAllFriendRequestsAction());
 			dispatch(getSavePostsAction());
+			dispatch(getHomeStoriesAction());
 
 			dispatch({
 				type: 'socket/connect',
@@ -158,6 +165,22 @@ function App() {
 								}
 							/>
 							<Route
+								path="/hashtags/:hashtag"
+								element={
+									<Protected>
+										<HashtagPage />
+									</Protected>
+								}
+							/>
+							<Route
+								path="/discover"
+								element={
+									<Protected>
+										<DisCoverPage />
+									</Protected>
+								}
+							/>
+							<Route
 								path="/saves"
 								element={
 									<Protected>
@@ -195,11 +218,15 @@ function App() {
 							/>
 							<Route
 								path="/groups/create"
-								element={<CreateGroupPage />}
+								element={
+									<Protected>
+										<CreateGroupPage />
+									</Protected>
+								}
 							/>
 
 							<Route
-								path="/groups/feed"
+								path="/groups"
 								element={
 									<Protected>
 										<GroupFeedPage />
@@ -223,12 +250,11 @@ function App() {
 									</Protected>
 								}
 							/>
-
 							<Route
-								path="/locations/create"
+								path="/admin/:type?"
 								element={
 									<Protected>
-										<CreateLocation />
+										<AdminPage />
 									</Protected>
 								}
 							/>
@@ -238,15 +264,6 @@ function App() {
 								element={
 									<Protected>
 										<MessagePage />
-									</Protected>
-								}
-							/>
-
-							<Route
-								path="/admin"
-								element={
-									<Protected>
-										<AdminPage />
 									</Protected>
 								}
 							/>

@@ -43,17 +43,6 @@ const CallModal = () => {
   const handleAnswere = () => {
     setAnswere(true)
     createStream()
-
-    // setAnswere(true)
-    // socket.emit('answere', callData.sender)
-    // navigator.mediaDevices
-    //   .getUserMedia({ video: callData.video, audio: true })
-    //   .then(stream => {
-    //     const call = window.peer.call(callData.peerId, stream)
-    //     call.on('stream', remoteStream => {
-    //       // Show stream in some <video> element.
-    //     })
-    //   })
   }
 
   const handleEndCall = () => {
@@ -166,12 +155,16 @@ const CallModal = () => {
 
   //create peer object
   useEffect(() => {
-    const peer = new Peer(socket.socket.id, {
-      host: 'localhost',
-      port: 9000,
-      path: '/'
-      // secure: true,
-    })
+    const peer = new Peer(
+      socket.socket.id
+      //   {
+      //   // host: 'localhost',
+      //   host: 'horizon-backend-baxc.onrender.com',
+      //   port: 9000,
+      //   path: '/',
+      //   secure: true
+      // }
+    )
 
     peer.on('call', function (call) {
       callsRef.current.push(call)
@@ -250,15 +243,6 @@ const CallModal = () => {
     //   }
     // })
   }
-  // let black = ({ width = 3840, height = 2160 } = {}) => {
-  //   let canvas = Object.assign(document.createElement('canvas'), {
-  //     width,
-  //     height
-  //   })
-  //   canvas.getContext('2d').fillRect(0, 0, width, height)
-  //   let stream = canvas.captureStream()
-  //   return Object.assign(stream.getVideoTracks()[0], { enabled: false })
-  // }
 
   const handleOnMic = () => {
     setAudio(true)

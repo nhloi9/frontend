@@ -24,6 +24,8 @@ import ToMessageButton from '../Message/ToMessageButton'
 import { MdArrowOutward } from 'react-icons/md'
 import { defaulAvatar } from '../../Constants'
 import Stories from '../Home/Stories'
+import { storyTypes } from '../../Reduxs/Types/storyType'
+import { globalTypes } from '../../Reduxs/Types/globalType'
 
 const types = [
   {
@@ -81,12 +83,16 @@ const Intro = ({ userInfo, own, files, friends }) => {
   }
 
   const confirm = () => {
+    dispatch({ type: globalTypes.ALERT, payload: { loading: true } })
+
     upload([avatar])
       .then(images => {
         dispatch(updateAvatarAction(images[0]))
         setShowUpdateAvatar(false)
       })
       .catch(err => {
+        dispatch({ type: globalTypes.ALERT, payload: { loading: false } })
+
         toast.error(err)
         setShowUpdateAvatar(false)
       })
@@ -374,6 +380,10 @@ const Intro = ({ userInfo, own, files, friends }) => {
                 className='w-[140px]  relative h-[250px] rounded-md  cursor-pointer'
                 key={story.id}
                 onClick={() => {
+                  dispatch({
+                    type: storyTypes.STORY_PROFILE,
+                    payload: 'profile'
+                  })
                   navigate('/stories', {
                     state: { current: index }
                   })

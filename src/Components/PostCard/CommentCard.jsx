@@ -5,15 +5,18 @@ import { BiDislike, BiLike, BiSolidDislike, BiSolidLike } from 'react-icons/bi'
 import InputComment from './InputComment'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { Avatar, Button, Dropdown, Tooltip } from 'antd'
+import { Button, Dropdown, Tooltip } from 'antd'
 import { AiOutlineMore } from 'react-icons/ai'
 import { CiEdit } from 'react-icons/ci'
 import { MdDeleteOutline } from 'react-icons/md'
 import {
+  deleteCommentAction,
   reactComment,
   unReactComment,
   updateComment
 } from '../../Reduxs/Actions/postAction'
+import { defaulAvatar } from '../../Constants'
+import Avatar from '../Home/Avatar'
 
 // import EditIcon from '@mui/icons-material/Edit'
 // import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
@@ -71,7 +74,7 @@ const CommentCard = ({ comment, post }) => {
 
   // delete comment
   const handleDelete = () => {
-    // dispatch(deleteComment(comment, post))
+    dispatch(deleteCommentAction(comment?.id, post?.id))
   }
 
   // useEffect(() => {
@@ -85,16 +88,15 @@ const CommentCard = ({ comment, post }) => {
         !comment.id && 'opacity-30 pointer-events-none'
       } group ${comment.updating ? 'opacity-40 pointer-events-none' : ''}`}
     >
-      <div className='flex gap-1'>
+      <div className='flex gap-1 pb-1'>
         <Avatar
-          src={comment.sender?.avatar?.url}
-          size='small'
-          className='!cursor-pointer'
+          src={comment.sender?.avatar?.url ?? defaulAvatar}
+          size={25}
           onClick={() => navigate('/profile/' + comment.sender?.id)}
         />
-        <p className=' translate-y-[-3px] font-[500]  capitalize'>
+        <p className=' translate-y-[-3px]  capitalize'>
           <span
-            className='cursor-pointer'
+            className='cursor-pointer  hover:underline'
             onClick={() => navigate('/profile/' + comment.sender?.id)}
           >
             {comment.sender?.firstname + ' ' + comment.sender?.lastname}
@@ -138,11 +140,16 @@ const CommentCard = ({ comment, post }) => {
           <div className='w-[calc(100%-30px)]'>
             <p>
               {comment.receiverId && comment.receiverId !== comment.senderId ? (
-                <span
-                  className='font-[500] mr-1 cursor-pointer capitalize'
-                  onClick={() => navigate(`/profile/${comment.tag._id}`)}
-                >
-                  @{comment.receiver.firstname + comment.receiver.lastname}
+                <span>
+                  @
+                  <span
+                    className='hover:underline mr-1 cursor-pointer capitalize'
+                    onClick={() => navigate(`/profile/${comment.tag._id}`)}
+                  >
+                    {comment.receiver.firstname +
+                      ' ' +
+                      comment.receiver.lastname}
+                  </span>
                 </span>
               ) : (
                 ''
@@ -242,7 +249,7 @@ const CommentCard = ({ comment, post }) => {
         )}
         {/* <div className='flex justify-end gap-2 w-[50px]'> */}
         <div className='hidden  group-hover:block'>
-          {comment.senderId === user.id ? (
+          {comment.senderId === user?.id ? (
             <Dropdown
               menu={{
                 items: [
@@ -276,7 +283,7 @@ const CommentCard = ({ comment, post }) => {
             >
               <AiOutlineMore size={18} className='cursor-pointer' />
             </Dropdown>
-          ) : post.id === user.id ? (
+          ) : post?.userId === user.id ? (
             <Dropdown
               menu={{
                 items: [

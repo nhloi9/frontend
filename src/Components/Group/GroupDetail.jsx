@@ -1,33 +1,32 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { MdArrowOutward, MdOutlinePublic } from 'react-icons/md'
+import {
+  MdArrowOutward,
+  MdGroupRemove,
+  MdOutlineDeleteForever,
+  MdOutlinePublic
+} from 'react-icons/md'
 import { FaLock } from 'react-icons/fa'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   Avatar,
   Button,
-  Cascader,
-  Checkbox,
   ColorPicker,
-  DatePicker,
   Form,
   Image,
   Input,
-  InputNumber,
   Modal,
   Popover,
   Radio,
   Select,
-  Slider,
-  Switch,
   Tooltip,
-  TreeSelect,
-  Upload
+  DatePicker,
+  Popconfirm
 } from 'antd'
+
 import { CiSearch } from 'react-icons/ci'
 import { LuClock5 } from 'react-icons/lu'
 import { MdGroups } from 'react-icons/md'
 import { MultiSelect } from 'react-multi-select-component'
-import { GroupInvite } from '../../Reduxs/Actions/groupAction'
 import { deleteApi, getApi, postApi, putApi } from '../../network/api'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { FaBook } from 'react-icons/fa6'
@@ -42,8 +41,12 @@ import CardBody from '../PostCard/CardBody'
 import { FiSettings } from 'react-icons/fi'
 import { postTypes } from '../../Reduxs/Types/postType'
 import Posts from '../Home/Posts'
-import { IoIosVideocam } from 'react-icons/io'
+import { IoIosMore, IoIosVideocam } from 'react-icons/io'
 import CardHeader from '../PostCard/CardHeader'
+import { filterFriends } from '../../utils/other'
+import dayjs from 'dayjs'
+import { ar, el } from 'date-fns/locale'
+const { RangePicker } = DatePicker
 
 const GroupDetail = () => {
   const { posts } = useSelector(state => state.post)
@@ -263,20 +266,7 @@ const GroupDetail = () => {
     ) {
       navigate('/groups/' + id + '/about')
     }
-  }, [
-    id,
-    groupData,
-    navigate,
-    user?.id,
-    myRequest?.status
-    // groupData?.adminId,
-    // groupData?.id,
-    // groupData?.privacy,
-    // myRequest?.status,
-    // navigate,
-    // user?.id,
-    // type
-  ])
+  }, [id, groupData, navigate, user?.id, myRequest?.status])
 
   // get files
   useEffect(() => {
@@ -324,7 +314,7 @@ const GroupDetail = () => {
               <div className='flex flex-col justify-center'>
                 <Link
                   to={'/groups/' + groupData?.id}
-                  className='text-[18px] font-[500] appearance-none !text-black no-underline'
+                  className='text-[18px] font-[500] appearance-none !text-black no-underline hover:underline'
                 >
                   {groupData?.name}
                 </Link>
@@ -471,7 +461,12 @@ const GroupDetail = () => {
                         )}
                       </span>
                       {' ' + groupData?.privacy + ' group  . '}
-                      <span className='font-[600] '>
+                      <span
+                        className='font-[600]  hover:underline cursor-pointer'
+                        onClick={() =>
+                          navigate('/groups/' + groupData?.id + '/members')
+                        }
+                      >
                         {members?.length + 1 + ' members'}
                       </span>
                     </span>
@@ -479,14 +474,16 @@ const GroupDetail = () => {
                   <br />
                   <div className='flex justify-between'>
                     <div className='flex gap-[1px]'>
-                      {members?.map((member, index) => (
-                        <div
-                          className='!border rounded-full flex items-center justify-center'
-                          key={index}
-                        >
-                          <Avatar src={member?.avatar?.url ?? defaulAvatar} />
-                        </div>
-                      ))}
+                      {[groupData?.admin, ...members]
+                        ?.slice(0, 10)
+                        ?.map((member, index) => (
+                          <div
+                            className='!border rounded-full flex items-center justify-center'
+                            key={index}
+                          >
+                            <Avatar src={member?.avatar?.url ?? defaulAvatar} />
+                          </div>
+                        ))}
                     </div>
                     {user.id === groupData.adminId ? (
                       <Button type='primary'>
@@ -578,58 +575,7 @@ const GroupDetail = () => {
 
               {/* about */}
               {type === 'about' && (
-                <>
-                  <div className='flex w-full justify-center'>
-                    <div className='w-[70%] mt-[70px] bg-white p-3 rounded-md '>
-                      <h1 className='!text-[18px] my-2'>About this group</h1>
-
-                      <hr className='bg-gray-400 h-[1px] w-full mt-3 mb-3' />
-                      {groupData?.description && (
-                        <div className='my-2'>
-                          <span className='text-gray-500  '>
-                            {groupData?.description}
-                          </span>
-                        </div>
-                      )}
-                      <div className='flex items-start gap-1'>
-                        <div>
-                          {groupData?.privacy === 'public' ? (
-                            <MdOutlinePublic className='!translate-y-[3px] !text-gray-500' />
-                          ) : (
-                            <FaLock className='!translate-y-[3px]' />
-                          )}
-                        </div>
-
-                        <div>
-                          <h1 className='capitalize'> {groupData?.privacy}</h1>
-                          <span className='text-sm text-gray-500'>
-                            {groupData?.privacy === 'public'
-                              ? "Any one can see who's in the group and what they post."
-                              : "Only members can see who's in the group and what they post."}
-                          </span>
-                        </div>
-                      </div>
-                      <div className='flex items-start gap-1 mt-3'>
-                        <div>
-                          <LuClock5 className='!translate-y-[3px] !text-gray-500' />
-                        </div>
-
-                        <div>
-                          <h1 className='capitalize'> History</h1>
-                          <span className='text-sm text-gray-500'>
-                            Group create on {groupData?.createdAt?.slice(0, 10)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className='flex justify-center'>
-                    <div className='w-[70%] mt-4 bg-white p-3 rounded-md '>
-                      <h1 className='!text-[18px]'>Members </h1>
-                      <hr className='bg-gray-400 h-[1px] w-full mt-3 mb-2' />
-                    </div>
-                  </div>
-                </>
+                <About members={members} groupData={groupData} />
               )}
 
               {/* home */}
@@ -637,7 +583,7 @@ const GroupDetail = () => {
                 <div className='flex w-full justify-center gap-4'>
                   {/* left */}
                   <div className=' w-[80%] xl:w-[55%] mt-[70px]'>
-                    <div className='flex  flex-col py-4  bg-white rounded-xl shadow-lg'>
+                    <div className='flex  flex-col py-4  bg-white rounded-xl shadow'>
                       <div className='flex items-center border-b-2   border-blue-400 pb-4 pl-4 w-full'>
                         <Avatar
                           size='large'
@@ -764,6 +710,13 @@ const GroupDetail = () => {
                   {/* right */}
                   <div className='hidden xl:block w-[35%] h-min mt-[70px] bg-white p-3 rounded-md '>
                     <h1 className='!text-[18px]'>About this group</h1>
+                    {groupData?.description && (
+                      <div className='my-2'>
+                        <span className='text-gray-500  '>
+                          {groupData?.description}
+                        </span>
+                      </div>
+                    )}
                     <hr className='bg-gray-400 h-[1px] w-full mt-3 mb-2' />
                     <div className='flex items-start gap-1'>
                       <div>
@@ -809,53 +762,13 @@ const GroupDetail = () => {
 
               {/* members */}
               {type === 'members' && (
-                <div className='w-[80%] rounded-md min-h-[100px] bg-white mx-auto mt-[70px]  gap-3 p-3'>
-                  <h1>Number of members: {members?.length + 1}</h1>
-                  <hr className='h-[1px] my-2 bg-gray-400' />
-                  <h1>Admin</h1>
-                  <div className='border my-2 w-full lg:h-[115px] h-[90px] rounded-md flex px-4 items-center gap-4'>
-                    <img
-                      src={groupData?.admin?.avatar?.url ?? defaulAvatar}
-                      className='lg:w-20 lg:h-20 w-16 h-16 object-cover rounded-md cursor-pointer'
-                      alt=''
-                      onClick={() =>
-                        navigate('/profile/' + groupData?.admin?.id)
-                      }
-                    />
-                    <h1
-                      className='cursor-pointer'
-                      onClick={() =>
-                        navigate('/profile/' + groupData?.admin?.id)
-                      }
-                    >
-                      {groupData?.admin?.firstname +
-                        ' ' +
-                        groupData?.admin?.lastname}
-                    </h1>
-                  </div>
-                  {members?.length > 0 && (
-                    <>
-                      <hr className='h-[1px] my-3 bg-gray-400' />
-                      <h1 className='mb-2'>Other members</h1>
-                      {members?.map((friend, index) => (
-                        <div className='border my-2 w-full lg:h-[115px] h-[90px] rounded-md flex px-4 items-center gap-4'>
-                          <img
-                            src={friend?.avatar?.url ?? defaulAvatar}
-                            className='lg:w-20 lg:h-20 w-16 h-16 object-cover rounded-md cursor-pointer'
-                            alt=''
-                            onClick={() => navigate('/profile/' + friend?.id)}
-                          />
-                          <h1
-                            className='cursor-pointer'
-                            onClick={() => navigate('/profile/' + friend?.id)}
-                          >
-                            {friend?.firstname + ' ' + friend?.lastname}
-                          </h1>
-                        </div>
-                      ))}
-                    </>
-                  )}
-                </div>
+                <Members
+                  isAdmin={groupData?.adminId === user?.id}
+                  members={members}
+                  groupData={groupData}
+                  navigate={navigate}
+                  deleteRequest={deleteRequest}
+                />
               )}
 
               {type === 'files' && (
@@ -922,49 +835,12 @@ const GroupDetail = () => {
           ) : type === 'pending_posts' && groupData?.adminId === user?.id ? (
             <PendingPosts
               posts={pendingPosts}
+              members={members}
               approve={approvePost}
               decline={declinePost}
             />
           ) : type === 'edit' && groupData?.adminId === user?.id ? (
-            <div className='w-full '>
-              <Form
-                labelCol={{
-                  span: 10
-                }}
-                wrapperCol={{
-                  span: 14
-                }}
-                layout='vertical'
-                // disabled={componentDisabled}
-                style={{
-                  maxWidth: 600,
-                  margin: ' 40px auto'
-                }}
-              >
-                <Form.Item label='Name'>
-                  <Input />
-                </Form.Item>
-                <Form.Item label='Description'>
-                  <Input />
-                </Form.Item>
-                <Form.Item label='Privacy'>
-                  <Select>
-                    <Select.Option value='demo'>Private</Select.Option>
-                    <Select.Option value='demo'>Public</Select.Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item label='Require post approval'>
-                  <Radio.Group>
-                    <Radio value={true}> On </Radio>
-                    <Radio value={false}> Off </Radio>
-                  </Radio.Group>
-                </Form.Item>
-
-                <Form.Item label='ColorPicker'>
-                  <ColorPicker />
-                </Form.Item>
-              </Form>
-            </div>
+            <EditGroup groupData={groupData} setGroupData={setGroupData} />
           ) : (
             <div></div>
           )}
@@ -989,6 +865,237 @@ const GroupDetail = () => {
         />
       </div>
     )
+  )
+}
+
+const About = ({ groupData, members }) => {
+  return (
+    <>
+      <div className='flex w-full justify-center'>
+        <div className='w-[70%] mt-[70px] bg-white p-3 rounded-md '>
+          <h1 className='!text-[18px] my-2'>About this group</h1>
+          {groupData?.description && (
+            <div className='my-2'>
+              <span className='text-gray-600  '>{groupData?.description}</span>
+            </div>
+          )}
+          <hr className='bg-gray-400 h-[1px] w-full mt-3 mb-3' />
+
+          <div className='flex items-start gap-1'>
+            <div>
+              {groupData?.privacy === 'public' ? (
+                <MdOutlinePublic className='!translate-y-[3px] !text-gray-500' />
+              ) : (
+                <FaLock className='!translate-y-[3px]' />
+              )}
+            </div>
+
+            <div>
+              <h1 className='capitalize'> {groupData?.privacy}</h1>
+              <span className='text-sm text-gray-500'>
+                {groupData?.privacy === 'public'
+                  ? "Any one can see who's in the group and what they post."
+                  : "Only members can see who's in the group and what they post."}
+              </span>
+            </div>
+          </div>
+          <div className='flex items-start gap-1 mt-3'>
+            <div>
+              <LuClock5 className='!translate-y-[3px] !text-gray-500' />
+            </div>
+
+            <div>
+              <h1 className='capitalize'> History</h1>
+              <span className='text-sm text-gray-500'>
+                Group create on {groupData?.createdAt?.slice(0, 10)}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className='flex justify-center'>
+        <div className='w-[70%] mt-4 bg-white p-3 rounded-md '>
+          <h1 className='!text-[18px]'>Members . {members?.length + 1} </h1>
+          <hr className='bg-gray-400 h-[1px] w-full mt-3 mb-2' />
+          <Avatar src={groupData?.admin?.avatar?.url ?? defaulAvatar} />
+          <span> {' ' + groupData?.admin?.firstname} is admin</span>
+        </div>
+      </div>
+    </>
+  )
+}
+const EditGroup = ({ groupData, setGroupData }) => {
+  const dispatch = useDispatch()
+
+  return (
+    <div className='w-full '>
+      <Form
+        onFinish={values => {
+          dispatch({
+            type: globalTypes.ALERT,
+            payload: {
+              loading: true
+            }
+          })
+          putApi('/groups/' + groupData?.id, values)
+            .then(() => {
+              setGroupData(pre => ({
+                ...pre,
+                ...values
+              }))
+              dispatch({
+                type: globalTypes.ALERT,
+                payload: {
+                  success: 'Group updated successfully'
+                }
+              })
+            })
+            .catch(error => {
+              dispatch({
+                type: globalTypes.ALERT,
+                payload: {
+                  error
+                }
+              })
+            })
+        }}
+        labelCol={{
+          span: 10
+        }}
+        wrapperCol={{
+          span: 14
+        }}
+        layout='vertical'
+        // disabled={componentDisabled}
+        style={{
+          maxWidth: 600,
+          margin: ' 40px auto'
+        }}
+      >
+        <Form.Item
+          initialValue={groupData.name}
+          label='Name'
+          rules={[
+            {
+              required: true,
+              message: 'Please input your group name'
+            }
+          ]}
+          name={'name'}
+        >
+          <Input maxLength={100} showCount />
+        </Form.Item>
+        <Form.Item
+          initialValue={groupData.description}
+          label='Description'
+          name={'description'}
+        >
+          <Input.TextArea showCount maxLength={200} />
+        </Form.Item>
+        <Form.Item
+          initialValue={groupData.privacy}
+          label='Privacy'
+          name={'privacy'}
+          rules={[
+            {
+              required: true,
+              message: 'Please select your group privacy'
+            }
+          ]}
+        >
+          <Select>
+            <Select.Option value='private'>Private</Select.Option>
+            <Select.Option value='public'>Public</Select.Option>
+          </Select>
+        </Form.Item>
+        <Form.Item>
+          <Button className='w-full' type='primary' htmlType='submit'>
+            Update
+          </Button>
+        </Form.Item>
+      </Form>
+    </div>
+  )
+}
+
+const Members = ({ isAdmin, members, groupData, navigate, deleteRequest }) => {
+  const [term, setTerm] = useState('')
+  return (
+    <div className='w-[80%] max-w-[700px] rounded-md min-h-[100px] bg-white mx-auto mt-[70px]  gap-3 p-3 mb-3'>
+      <h1>Members · {members?.length + 1}</h1>
+
+      <hr className='h-[1px] my-2 bg-gray-400' />
+      <h1>Admin</h1>
+      <div className='border my-2 w-full lg:h-[115px] h-[90px] rounded-md flex px-4 items-center gap-4'>
+        <img
+          src={groupData?.admin?.avatar?.url ?? defaulAvatar}
+          className='lg:w-20 lg:h-20 w-16 h-16 object-cover rounded-md cursor-pointer'
+          alt=''
+          onClick={() => navigate('/profile/' + groupData?.admin?.id)}
+        />
+        <h1
+          className='cursor-pointer hover:underline'
+          onClick={() => navigate('/profile/' + groupData?.admin?.id)}
+        >
+          {groupData?.admin?.firstname + ' ' + groupData?.admin?.lastname}
+        </h1>
+      </div>
+      {members?.length > 0 && (
+        <>
+          <hr className='h-[1px] my-3 bg-gray-400' />
+          <h1 className='mb-2'>Other members</h1>
+          <input
+            onChange={e => setTerm(e.target.value)}
+            value={term}
+            placeholder='🔍 Find a member'
+            type='text'
+            className='block w-full h-[35px] rounded-3xl  !mb-3 px-3 bg-gray-200 border-none focus:outline-none placeholder:text-sm '
+          />
+
+          {filterFriends(term, members)?.map((friend, index) => (
+            <div className='border my-2 w-full lg:h-[115px] h-[90px] rounded-md flex px-4 items-center justify-between gap-4 group'>
+              <div className='flex items-center'>
+                <img
+                  src={friend?.avatar?.url ?? defaulAvatar}
+                  className='lg:w-20 lg:h-20 w-16 h-16 object-cover rounded-md cursor-pointer'
+                  alt=''
+                  onClick={() => navigate('/profile/' + friend?.id)}
+                />
+                <div className='flex flex-col justify-center'>
+                  <h1
+                    className='cursor-pointer hover:underline'
+                    onClick={() => navigate('/profile/' + friend?.id)}
+                  >
+                    {friend?.firstname + ' ' + friend?.lastname}
+                  </h1>
+                </div>
+              </div>
+              {isAdmin && (
+                <Popconfirm
+                  title='Remove member'
+                  description={`Are you sure to remove ${friend?.firstname} from ${groupData.name}?`}
+                  onConfirm={() => {
+                    const request = groupData?.requests?.find(
+                      request => request?.userId === friend.id
+                    )
+
+                    request && deleteRequest && deleteRequest(request)
+                  }}
+                  // onCancel={cancel}
+                  okText='Yes'
+                  cancelText='No'
+                >
+                  <MdOutlineDeleteForever
+                    size={20}
+                    className='!text-gray-500 hidden group-hover:block cursor-pointer'
+                  />
+                </Popconfirm>
+              )}
+            </div>
+          ))}
+        </>
+      )}
+    </div>
   )
 }
 
@@ -1074,112 +1181,234 @@ const Invite = ({ isModalOpen, handleCancel, friends, handleInvite }) => {
   )
 }
 
-const renderPage = type => {
-  switch (type) {
-    case 'member-requests':
-      return <div></div>
-    default:
-      return <div></div>
-  }
-}
-
 const MemberRequests = ({ joins, deleteRequest, updateRequest }) => {
+  const [filters, setFilters] = useState({})
+  const [term, setTerm] = useState('')
+  const filterDate = (arr, date) => {
+    switch (date) {
+      case undefined:
+        return arr
+
+      case 1:
+        return arr.filter(
+          item =>
+            new Date(item?.user?.createdAt) >
+            new Date().setMonth(new Date().getMonth() - 3)
+        )
+
+      case 2:
+        return arr.filter(
+          item =>
+            new Date(item?.user?.createdAt) >
+            new Date().setMonth(new Date().getMonth() - 6)
+        )
+      case 3:
+        return arr.filter(
+          item =>
+            new Date(item?.user?.createdAt) <
+            new Date().setFullYear(new Date().getFullYear() - 1)
+        )
+
+      case 4:
+        return arr.filter(
+          item =>
+            new Date(item?.user?.createdAt) <
+            new Date().setFullYear(new Date().getFullYear() - 2)
+        )
+
+      default:
+        return arr
+    }
+  }
+  const filterGender = (arr, gender) => {
+    switch (gender) {
+      case undefined:
+        return arr
+
+      case 1:
+        return arr.filter(item => item?.user?.detail?.gender === 'male')
+
+      case 2:
+        return arr.filter(item => item?.user?.detail?.gender === 'female')
+      case 3:
+        return arr.filter(item => item?.user?.detail?.gender === 'other')
+
+      case 4:
+        return arr.filter(
+          item =>
+            item?.user?.detail?.gender == null || item?.user?.detail == null
+        )
+
+      default:
+        return arr
+    }
+  }
+
+  const filterAge = (arr, age) => {
+    switch (age) {
+      case undefined:
+        return arr
+
+      case 1:
+        return arr.filter(
+          item =>
+            new Date(item?.user?.createdAt) >
+            new Date().setDate(new Date().getDate() - 7)
+        )
+
+      case 2:
+        return arr.filter(
+          item =>
+            new Date(item?.user?.createdAt) >
+            new Date().setMonth(new Date().getMonth() - 1)
+        )
+
+      default:
+        return arr
+    }
+  }
+  const filterName = (term, arr) => {
+    if (!term?.trim()) return arr
+    const tokens = term
+      ?.trim()
+      .split(' ')
+      ?.filter(item => item !== '')
+    return arr?.filter(({ user }) =>
+      tokens?.every(token =>
+        (user?.firstname + ' ' + user?.lastname)
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLowerCase()
+          ?.includes(
+            token
+              ?.normalize('NFD')
+              .replace(/[\u0300-\u036f]/g, '')
+              .toLowerCase()
+          )
+      )
+    )
+  }
+
+  const filterJoins = filterName(
+    term,
+    filterGender(
+      filterAge(filterDate(joins, filters.date), filters.age),
+      filters.gender
+    )
+  )
+
   return (
     <div className='relative'>
-      <div className='top-0 w-full p-10 bg-white shadow-md sticky'>
-        <h1 className='font-[700] text-[23px]'>Member requests</h1>
-        <input
-          className='block w-full mt-7 mb-3 px-4 py-2 bg-gray-200 rounded-2xl !border-none focus:outline-none'
-          placeholder='🔍 Search by name'
-        ></input>
-        <div className='flex gap-4'>
-          <Button className='bg-gray-200'>Clear filter</Button>
-          <Select
-            className='!w-[170px] !bg-gray-200'
-            placeholder='Join Horizon date'
-            // defaultValue='lucy'
-            style={{
-              width: 120
-            }}
-            // onChange={handleChange}
-            options={[
-              {
-                value: 'Less than 3 months ago',
-                label: 'Less than 3 months ago'
-              },
-              {
-                value: 'Less than 6 months ago',
-                label: 'Less than 6 months ago'
-              },
-              {
-                value: 'Over  a year ago',
-                label: 'Over  a year ago'
-              },
-              {
-                value: 'Over two year ago',
-                label: 'Over two year ago'
-              }
-            ]}
-          />
+      <div className='top-0 w-full py-10 px-[100px] bg-white shadow-md sticky'>
+        <div className='mx-auto w-[80%] max-w-[700px]'>
+          <h1 className='font-[700] text-[23px]'>Member requests</h1>
+          <input
+            onChange={e => setTerm(e.target.value)}
+            value={term}
+            className='block w-full max-w-[500px] mt-7 mb-3 px-4 py-2 bg-gray-200 rounded-2xl !border-none focus:outline-none'
+            placeholder='🔍 Search by name'
+          ></input>
+          <div className='flex gap-4'>
+            <Button
+              onClick={() => setFilters({})}
+              className='bg-gray-200'
+              disabled={!filters.age && !filters.date && !filters.gender}
+            >
+              Clear filter
+            </Button>
+            <Select
+              value={filters.date}
+              allowClear
+              className='!w-[170px] '
+              placeholder='Join Horizon date'
+              // defaultValue='lucy'
+              style={{
+                width: 120
+              }}
+              onChange={value => {
+                console.log(value)
+                setFilters({ ...filters, date: value })
+              }}
+              options={[
+                {
+                  value: 1,
+                  label: 'Less than 3 months ago'
+                },
+                {
+                  value: 2,
+                  label: 'Less than 6 months ago'
+                },
+                {
+                  value: 3,
+                  label: 'Over  a year ago'
+                },
+                {
+                  value: 4,
+                  label: 'Over two year ago'
+                }
+              ]}
+            />
 
-          <Select
-            placeholder='Request age'
-            // defaultValue='lucy'
-            style={{
-              width: 140
-            }}
-            // onChange={handleChange}
-            options={[
-              {
-                value: 'Less than 3 months ago',
-                label: 'Less than 3 months ago'
-              },
-              {
-                value: 'Less than 6 months ago',
-                label: 'Less than 6 months ago'
-              },
-              {
-                value: 'Over  a year ago',
-                label: 'Over  a year ago'
-              },
-              {
-                value: 'Over two year ago',
-                label: 'Over two year ago'
-              }
-            ]}
-          />
+            <Select
+              allowClear
+              value={filters.age}
+              onChange={value => {
+                console.log(value)
+                setFilters({ ...filters, age: value })
+              }}
+              placeholder='Request age'
+              // defaultValue='lucy'
+              style={{
+                width: 140
+              }}
+              // onChange={handleChange}
+              options={[
+                {
+                  value: 1,
+                  label: 'Less than a week'
+                },
+                {
+                  value: 2,
+                  label: 'Less than one month'
+                }
+              ]}
+            />
 
-          <Select
-            placeholder='Gender'
-            // defaultValue='lucy'
-            style={{
-              width: 120
-            }}
-            className='!w-[100px]'
-            // onChange={handleChange}
-            options={[
-              {
-                value: 'Less than 3 months ago',
-                label: 'Male'
-              },
-              {
-                value: 'Less than 6 months ago',
-                label: 'Female'
-              },
-              {
-                value: 'Over  a year ago',
-                label: 'Other'
-              },
-              {
-                value: 'Over two year ago',
-                label: 'Unknown'
-              }
-            ]}
-          />
+            <Select
+              allowClear
+              value={filters.gender}
+              onChange={value => {
+                setFilters({ ...filters, gender: value })
+              }}
+              placeholder='Gender'
+              style={{
+                width: 120
+              }}
+              className='!w-[100px]'
+              options={[
+                {
+                  value: 1,
+                  label: 'Male'
+                },
+                {
+                  value: 2,
+                  label: 'Female'
+                },
+                {
+                  value: 3,
+                  label: 'Other'
+                },
+                {
+                  value: 4,
+                  label: 'Unknown'
+                }
+              ]}
+            />
+          </div>
         </div>
       </div>
       <div>
-        {joins?.length === 0 && (
+        {filterJoins?.length === 0 && (
           <div className='w-full h-[50vh] flex items-center justify-center'>
             <img
               src={require('../../assets/images/member_request_no.png')}
@@ -1188,9 +1417,9 @@ const MemberRequests = ({ joins, deleteRequest, updateRequest }) => {
             />
           </div>
         )}
-        {joins?.length > 0 && (
+        {filterJoins?.length > 0 && (
           <div className='pt-5 px-10 flex flex-col gap-3'>
-            {joins.map(req => (
+            {filterJoins.map(req => (
               <div className='p-4 rounded-md bg-white shadow flex justify-between '>
                 <div>
                   <UserCard
@@ -1226,75 +1455,111 @@ const MemberRequests = ({ joins, deleteRequest, updateRequest }) => {
   )
 }
 
-const PendingPosts = ({ posts = [], approve, decline }) => {
+const PendingPosts = ({ posts = [], approve, decline, members }) => {
+  const [dates, setDates] = useState(null)
+  const [author, setAuthor] = useState(null)
+  const [term, setTerm] = useState('')
+
+  const filterDate = arr => {
+    if (dates === null) return arr
+    return arr.filter(post => {
+      const start = dates[0]?.startOf('day')
+      const end = dates[1]?.endOf('day')
+      return (
+        dayjs(post.createdAt).isAfter(start) &&
+        dayjs(post.updatedAt).isBefore(end)
+      )
+    })
+  }
+
+  const filterText = arr => {
+    if (!term?.trim()) return arr
+    const tokens = term
+      ?.trim()
+      .split(' ')
+      ?.filter(item => item !== '')
+    return arr?.filter(post =>
+      tokens?.every(
+        token =>
+          post?.text &&
+          post?.text
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            ?.includes(
+              token
+                ?.normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase()
+            )
+      )
+    )
+  }
+
+  const filterAuthor = arr => {
+    if (author) {
+      return arr.filter(item => item?.user?.id === author)
+    }
+    return arr
+  }
+  const filterPosts = filterText(filterAuthor(filterDate(posts)))
+  const filterOption = (input, option) =>
+    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+
   return (
     <div className='relative'>
-      <div className='top-0 w-full z-10 p-10 bg-white shadow-md sticky'>
-        <h1 className='font-[700] text-[23px]'>Pending approvals</h1>
-        <input
-          className='block w-full mt-7 mb-3 px-4 py-2 bg-gray-200 rounded-2xl !border-none focus:outline-none'
-          placeholder='🔍 Search'
-        ></input>
-        <div className='flex gap-4'>
-          <Button className='bg-gray-200'>Clear filter</Button>
-          <Select
-            className='!w-[170px] !bg-gray-200 rounded-md'
-            placeholder='Select date'
-            // defaultValue='lucy'
-            style={{
-              width: 120
-            }}
-            // onChange={handleChange}
-            options={[
-              {
-                value: 'Less than 3 months ago',
-                label: 'Less than 3 months ago'
-              },
-              {
-                value: 'Less than 6 months ago',
-                label: 'Less than 6 months ago'
-              },
-              {
-                value: 'Over  a year ago',
-                label: 'Over  a year ago'
-              },
-              {
-                value: 'Over two year ago',
-                label: 'Over two year ago'
-              }
-            ]}
-          />
+      <div className='top-0 w-full z-10 py-10 bg-white shadow-md sticky'>
+        <div className='mx-auto w-[80%] max-w-[700px]'>
+          <h1 className='font-[700] text-[23px]'>Pending approvals</h1>
+          <input
+            className='block w-full max-w-[500px] mt-7 mb-3 px-4 py-2 bg-gray-200 rounded-2xl !border-none focus:outline-none'
+            placeholder='🔍 Search'
+            value={term}
+            onChange={e => setTerm(e.target.value)}
+          ></input>
+          <div className='flex gap-4'>
+            <Button
+              className='bg-gray-200'
+              disabled={dates === null && !author}
+              onClick={() => {
+                setDates(null)
+                setAuthor(null)
+              }}
+            >
+              Clear filter
+            </Button>
+            <RangePicker
+              value={dates}
+              onChange={dates => {
+                console.log(dates)
+                setDates(dates)
+              }}
+              disabledDate={current => {
+                return current && current > dayjs()
+              }}
+            />
 
-          <Select
-            placeholder='Author'
-            // defaultValue='lucy'
-            style={{
-              width: 140
-            }}
-            // onChange={handleChange}
-            options={[
-              {
-                value: 'Less than 3 months ago',
-                label: 'Less than 3 months ago'
-              },
-              {
-                value: 'Less than 6 months ago',
-                label: 'Less than 6 months ago'
-              },
-              {
-                value: 'Over  a year ago',
-                label: 'Over  a year ago'
-              },
-              {
-                value: 'Over two year ago',
-                label: 'Over two year ago'
-              }
-            ]}
-          />
+            <Select
+              allowClear
+              showSearch
+              placeholder='Author'
+              optionFilterProp='children'
+              onChange={value => {
+                console.log(value)
+                setAuthor(value)
+              }}
+              // onSearch={onSearch}
+              filterOption={filterOption}
+              options={members.map(item => ({
+                value: item?.id,
+                label: item?.firstname + ' ' + item?.lastname
+              }))}
+            />
+          </div>
         </div>
       </div>
       <div>
-        {posts?.length === 0 && (
+        {filterPosts?.length === 0 && (
           <div className='w-full h-[50vh] flex items-center justify-center'>
             <img
               src={require('../../assets/images/post_pendding_no.png')}
@@ -1303,9 +1568,9 @@ const PendingPosts = ({ posts = [], approve, decline }) => {
             />
           </div>
         )}
-        {posts?.length > 0 && (
+        {filterPosts?.length > 0 && (
           <div className='py-5 w-full flex flex-col items-center gap-4'>
-            {posts.map(post => (
+            {filterPosts.map(post => (
               <div className='w-[95%] bg-white rounded-md md:w-[600px]'>
                 <div className='pb-3'>
                   <CardHeader

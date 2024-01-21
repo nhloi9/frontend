@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import toast from 'react-hot-toast'
 import LinearProgress from '@mui/material/LinearProgress'
 import { globalTypes } from '../../Reduxs/Types/globalType'
+import { Spin } from 'antd'
 
 const Alert = () => {
   const [loadingSuccess, setLoadingSuccess] = useState(false)
@@ -63,9 +64,12 @@ const Loader = ({ setLoadingSuccess }) => {
     }
   }, [setLoadingSuccess])
   return (
-    <div className='fixed top-0 right-0  z-[9] left-0 bottom-0  bg-[#00000025]'>
+    <div className='fixed top-0 right-0  z-[9] left-0 bottom-0  bg-[#00000038]'>
       <div className=''>
         <LinearProgress variant='determinate' value={progress} />
+      </div>
+      <div className='h-[90vh] flex items-center justify-center'>
+        <Spin size='large' />
       </div>
     </div>
   )

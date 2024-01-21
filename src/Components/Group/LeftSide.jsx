@@ -24,7 +24,7 @@ const LeftSide = ({ active }) => {
             className={`flex gap-2 items-center h-[50px] px-1 rounded-md hover:bg-gray-200 cursor-pointer ${
               active === 1 ? 'bg-gray-200 ' : ''
             }`}
-            onClick={() => navigate('/groups/feed')}
+            onClick={() => navigate('/groups')}
           >
             <div
               className={`w-9 h-9 rounded-full flex items-center justify-center ${
@@ -35,7 +35,7 @@ const LeftSide = ({ active }) => {
             </div>
             <h1>Your feed</h1>
           </div>
-          <div
+          {/* <div
             className={`flex gap-2 items-center h-[50px] px-1 rounded-md hover:bg-gray-200 cursor-pointer ${
               active === 2 ? 'bg-gray-200 ' : ''
             }`}
@@ -49,7 +49,7 @@ const LeftSide = ({ active }) => {
               <i className={` discover ${active === 2 ? 'invert' : ''}`}></i>
             </div>
             <h1>Discover</h1>
-          </div>
+          </div> */}
           <div
             className={`flex gap-2 items-center h-[50px] px-1 rounded-md hover:bg-gray-200 cursor-pointer ${
               active === 3 ? 'bg-gray-200 ' : ''

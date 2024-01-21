@@ -10,15 +10,16 @@ import {
   Select,
   Tooltip
 } from 'antd'
-import { FaCamera, FaUserTag } from 'react-icons/fa'
+import { FaCamera, FaUserFriends, FaUserTag } from 'react-icons/fa'
 import { IoIosVideocam, IoMdClose } from 'react-icons/io'
 import { toast } from 'react-hot-toast'
-import { MdAddPhotoAlternate } from 'react-icons/md'
+import { MdAddPhotoAlternate, MdPublic } from 'react-icons/md'
 import axios from 'axios'
 import { IoLocationSharp } from 'react-icons/io5'
 import { GrLinkPrevious } from 'react-icons/gr'
 import EmojiSelect from './EmojiSelect'
 import { useDispatch, useSelector } from 'react-redux'
+import { TiArrowSortedDown } from 'react-icons/ti'
 import {
   createPostAction,
   updatePostAction
@@ -35,6 +36,9 @@ import { MultiSelect } from 'react-multi-select-component'
 import { AiOutlineEye } from 'react-icons/ai'
 // import { use } from 'i18next'
 import { generateVideoThumbnails } from '@rajesh896/video-thumbnails-generator'
+import { BiSolidLockAlt } from 'react-icons/bi'
+import { getApi } from '../../network/api'
+import { el } from 'date-fns/locale'
 
 function dataURLtoFile (dataURL, filename = 'file') {
   const arr = dataURL.split(',')
@@ -55,15 +59,27 @@ function dataURLtoFile (dataURL, filename = 'file') {
 
 const options = [
   {
-    label: ' Only me',
+    label: (
+      <p className='!text-[13px]'>
+        <BiSolidLockAlt className='!translate-y-[1px]' size={13} /> Only me
+      </p>
+    ),
     value: 'private'
   },
   {
-    label: 'Friends',
+    label: (
+      <p className='!text-[13px]'>
+        <FaUserFriends className='!translate-y-[1px]' size={13} /> Friends
+      </p>
+    ),
     value: 'friend'
   },
   {
-    label: 'Public',
+    label: (
+      <p className='!text-[13px]'>
+        <MdPublic className='!translate-y-[1px]' size={13} /> Public
+      </p>
+    ),
     value: 'public'
   }
 ]
@@ -109,6 +125,7 @@ const ImgShow = ({ image }) => {
 }
 
 const CreatePost = ({ open, setOpen, post, groupId }) => {
+  const [hashtagOptions, setHashtagOptions] = useState([])
   const [draggable, setDraggable] = useState(true)
   const { user } = useSelector(state => state.auth)
   const { requests } = useSelector(state => state.friend)
@@ -133,6 +150,7 @@ const CreatePost = ({ open, setOpen, post, groupId }) => {
   const [sentisment, setSentisment] = useState(null)
   const [tags, setTags] = useState([])
   const [type, setType] = useState('post')
+  const [hashtags, setHashtags] = useState([])
 
   const [render, setRender] = useState(false)
 
@@ -233,33 +251,7 @@ const CreatePost = ({ open, setOpen, post, groupId }) => {
         toast.error(err)
       })
   }
-  const handleOpenBackCamera = e => {
-    setOpenCamera(true)
-    navigator.mediaDevices
-      .getUserMedia({ video: { facingMode: { exact: 'environment' } } })
-      .then(mediaStream =>
-        // console.log({mediaStream, a: mediaStream.getVideoTracks()})
-        {
-          videoRef.current.srcObject = mediaStream
-          videoRef.current.play()
-          videoRef.current.setAttribute('width', 300)
-          videoRef.current.setAttribute(
-            'height',
-            300 / mediaStream.getVideoTracks()[0].getSettings().aspectRatio
-          )
-          canvasRef.current.setAttribute('width', 300)
-          canvasRef.current.setAttribute(
-            'height',
-            300 / mediaStream.getVideoTracks()[0].getSettings().aspectRatio
-          )
-          setTracks(mediaStream.getTracks())
-        }
-      )
-      .catch(err => {
-        console.log(err)
-        // toast.error(err)
-      })
-  }
+
   const captureImage = () => {
     try {
       const canvas = canvasRef.current
@@ -304,7 +296,8 @@ const CreatePost = ({ open, setOpen, post, groupId }) => {
           sentisment,
           location,
           tags: tags.map(tag => tag.value),
-          groupId
+          groupId,
+          hashtags
         })
       )
     } else {
@@ -316,6 +309,7 @@ const CreatePost = ({ open, setOpen, post, groupId }) => {
           privacy,
           sentisment,
           location,
+          hashtags,
           tags: tags.map(tag => tag.value)
         })
       )
@@ -323,6 +317,20 @@ const CreatePost = ({ open, setOpen, post, groupId }) => {
 
     setOpen(false)
   }
+
+  useEffect(() => {
+    getApi('/posts/hashtags')
+      .then(({ data: { hashtags: arr } }) => {
+        setHashtagOptions(
+          arr.map(item => ({
+            value: item.name,
+            label: item.name,
+            count: item._count.posts
+          }))
+        )
+      })
+      .catch(err => {})
+  }, [])
 
   useEffect(() => {
     textareRef.current?.focus()
@@ -334,6 +342,8 @@ const CreatePost = ({ open, setOpen, post, groupId }) => {
       setLocation(post?.location)
       setImages(post?.files ?? [])
       setSentisment(post?.feel)
+      setPrivacy(post?.privacy)
+      setHashtags(post?.hashtags?.map(item => item.name) ?? [])
       setTags(
         post?.tags?.map(user => ({
           value: user.id,
@@ -343,7 +353,6 @@ const CreatePost = ({ open, setOpen, post, groupId }) => {
     }
   }, [post])
 
-  console.log({ post })
   return (
     <Modal
       destroyOnClose
@@ -441,26 +450,82 @@ const CreatePost = ({ open, setOpen, post, groupId }) => {
                       ' '}
                   {location && 'at ' + location.name}
                 </h1>
-                <Tooltip
-                  title='Who can see your post?'
-                  className={`${groupId && '!hidden'}`}
-                >
-                  <Select
-                    suffixIcon={<></>}
-                    className='!w-[80px] h-[25px] !text-[10px] !bg-gray-300 !rounded-md'
-                    defaultValue='private'
-                    bordered={false}
-                    options={options}
-                    value={privacy}
-                    onChange={value => {
-                      setPrivacy(value)
-                    }}
-                    size='small'
-                  />
-                </Tooltip>
+                {!post?.groupId && (
+                  <Tooltip
+                    title='Who can see your post?'
+                    className={`${groupId && '!hidden'}`}
+                  >
+                    <Select
+                      suffixIcon={
+                        <TiArrowSortedDown className='!translate-y-[1px]' />
+                      }
+                      className='!w-[100px] h-[25px] !text-[10px] !bg-gray-300 !rounded-md'
+                      defaultValue='private'
+                      bordered={false}
+                      options={options}
+                      value={privacy}
+                      onChange={value => {
+                        setPrivacy(value)
+                      }}
+                      size='small'
+                    />
+                  </Tooltip>
+                )}
               </div>
             </div>
-            <hr />
+            <hr className='h-1' />
+            <Select
+              value={hashtags}
+              onSelect={value => {
+                if (hashtags.length > 5)
+                  return toast.error('You can only add up to 5 hashtags')
+                const regexExp = /^#[^ !@#$%^&*(),.?":{}|<>]*$/gi
+                if (regexExp.test(value))
+                  setHashtags(pre => [
+                    ...pre.filter(item => item !== value),
+                    value
+                  ])
+              }}
+              onDeselect={value => {
+                setHashtags(pre => pre.filter(item => item !== value))
+              }}
+              onChange={value => {
+                console.log(value)
+              }}
+              // size='small'
+              maxCount={5}
+              suffixIcon={<></>}
+              className='placeholder:!text-blue-500 placeholder:!italic'
+              mode='tags'
+              style={{
+                width: '100%'
+              }}
+              placeholder='# hashtag'
+              variant='borderless'
+              // onChange={handleChange}
+              tokenSeparators={[' ']}
+              options={hashtagOptions}
+              // tagRender={({ label }) => {
+              //   return <span>{label}</span>
+              // }}
+              optionRender={(option, info) => {
+                const regexExp = /^#[^ !@#$%^&*(),.?":{}|<>]*$/gi
+                if (regexExp.test(option.data.label))
+                  return (
+                    <div>
+                      <p className='italic text-blue-500'>{option.label}</p>
+                      {option.data.count && option.data.count !== '0' ? (
+                        <p className='text-sm text-gray-500'>
+                          {option.data.count} posts
+                        </p>
+                      ) : (
+                        <></>
+                      )}
+                    </div>
+                  )
+                else return <div className='text-red-500'>wrong format !</div>
+              }}
+            />
 
             {/* <Radio.Group
                 options={options}
@@ -469,7 +534,7 @@ const CreatePost = ({ open, setOpen, post, groupId }) => {
                 }}
                 value={access}
               /> */}
-            <br />
+            <hr className='h-1' />
 
             <div className='flex justify-between'>
               <textarea
@@ -482,7 +547,7 @@ const CreatePost = ({ open, setOpen, post, groupId }) => {
                 // cols='49'
                 rows='2'
                 // className='pt-2 outline-none appearance-none resize-none'
-                placeholder={`${user?.firstname} ơi, bạn đang nghĩ gì thế ?`}
+                placeholder={`What's on your mind, ${user?.firstname}?`}
                 className='p-2  outline-none appearance-none resize-none border text-lg w-[80%] border-gray-200 hover:border-blue-500 border-none hover:outline-none sroll-min'
                 maxLength={200}
               ></textarea>
@@ -667,7 +732,7 @@ const CreatePost = ({ open, setOpen, post, groupId }) => {
                     onClick={() => setType('location')}
                   />
                 </Tooltip>
-                {!groupId && (
+                {!groupId && !post?.groupId && (
                   <Tooltip color='#bfc2c6' title='Tag people'>
                     <FaUserTag
                       size={18}
@@ -909,8 +974,12 @@ const SentismentSelector = ({ sentisment, setSentisment, setType }) => {
               item.name === sentisment?.name && 'bg-gray-100 '
             }`}
             onClick={() => {
-              setSentisment(item)
-              setType('post')
+              if (item.name === sentisment?.name) {
+                setSentisment(null)
+              } else {
+                setSentisment(item)
+                setType('post')
+              }
             }}
           >
             <div className=' h-9 w-9 rounded-full bg-[#e4e6eb] flex items-center justify-center'>

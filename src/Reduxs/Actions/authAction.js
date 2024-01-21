@@ -91,6 +91,7 @@ export const logoutAction = () => async (dispatch, getState) => {
 		dispatch({
 			type: authTypes.LOGOUT_SUCCESS,
 		});
+		window.location.reload();
 	} catch (error) {
 		dispatch({
 			type: globalTypes.ALERT,

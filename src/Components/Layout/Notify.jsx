@@ -48,7 +48,7 @@ const Notify = () => {
     }
   }, [notifies, type])
   return (
-    <div className='notify scroll-min w-[350px] min-h-[50vh] max-h-[80vh]   rounded-md !opacity-[1] hover:overflow-y-scroll overflow-y-hidden  cursor-default'>
+    <div className='notify scroll-min  w-[350px] min-h-[50vh] max-h-[80vh]  relative  rounded-md !opacity-[1] hover:overflow-y-scroll overflow-y-hidden  cursor-default'>
       <div className=' flex justify-between items-center pb-1'>
         <h1 className='font-[500] text-[18px]'>Notifications</h1>
 
@@ -144,7 +144,7 @@ const Notify = () => {
         >
           <IoSettingsOutline
             className='cursor-pointer'
-            onClick={closeSoundNotify}
+            // onClick={closeSoundNotify}
           />
         </Popover>
       </div>
@@ -167,14 +167,15 @@ const Notify = () => {
       ))}
 
       {notifiesData.length > 0 ? (
-        <div className='sticky bottom-0 h-[40px]  bg-slate-50 border-t border-t-red-500 flex justify-end items-center text-red-400'>
-          <span
-            className='cursor-pointer'
-            // onClick={handleDeleteAllNotifications}
-          >
-            delete all
-          </span>
-        </div>
+        // <div className='sticky -bottom-1 h-[40px]  bg-white border-t border-t-red-500 flex justify-end items-center text-red-400'>
+        //   <span
+        //     className='cursor-pointer'
+        //     // onClick={handleDeleteAllNotifications}
+        //   >
+        //     delete all
+        //   </span>
+        // </div>
+        <></>
       ) : (
         <div className='w-full h-max  flex items-center justify-center'>
           {type === 'all'
@@ -203,7 +204,7 @@ const NotifyCard = ({ notify }) => {
     >
       <div
         className={`flex  items-center ${
-          notify?.target ? 'w-[calc(100%-40px)]' : 'w-full'
+          notify?.image ? 'w-[calc(100%-40px)]' : 'w-full'
         }`}
       >
         <Avatar
@@ -216,8 +217,8 @@ const NotifyCard = ({ notify }) => {
               {notify?.sender?.firstname + ' ' + notify?.sender?.lastname}
             </span>
             {' ' + notify.text}{' '}
-            {notify.type === 'inviteGroup' && (
-              <span className='font-[600]'>{notify.target?.name}</span>
+            {(notify.type === 'inviteGroup' || notify.type === 'postGroup') && (
+              <span className='font-[600]'>{notify.expandData?.name}</span>
             )}
           </p>
           <p className='leading-[16px] text-[14px]'>
@@ -230,11 +231,11 @@ const NotifyCard = ({ notify }) => {
           </p>
         </div>
       </div>
-      {notify?.target && (
+      {notify?.image && (
         <div className='w-[40px] flex items-center'>
           <Avatar
-            crossOrigin='anonymous'
-            src={notify?.target?.image}
+            //  crossOrigin='anonymous'
+            src={notify?.image}
             size='large'
           />
         </div>

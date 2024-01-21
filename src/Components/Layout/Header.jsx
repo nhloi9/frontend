@@ -2,18 +2,18 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { IoIosNotifications } from 'react-icons/io'
 import { useDispatch, useSelector } from 'react-redux'
-import { Input, Space, Dropdown, Popconfirm, Avatar, Popover } from 'antd'
+import { Dropdown, Input, Popconfirm, Popover } from 'antd'
+import { IoLogOut } from 'react-icons/io5'
 
 import { logoutAction } from '../../Reduxs/Actions/authAction'
 import { defaulAvatar } from '../../Constants'
 import Notify from './Notify'
 import { FaFacebookMessenger } from 'react-icons/fa6'
-import { getApi } from '../../network/api'
 import { MdSearch } from 'react-icons/md'
-import { IoCloseCircleSharp } from 'react-icons/io5'
 import { filterFriends } from '../../utils/other'
-// import { AudioOutlined } from '@ant-design/icons'
-const { Search } = Input
+import { MdAdminPanelSettings } from 'react-icons/md'
+import { FaUser } from 'react-icons/fa'
+import Avatar from '../Home/Avatar'
 
 const Header = () => {
   const navigate = useNavigate()
@@ -29,7 +29,7 @@ const Header = () => {
     },
     {
       title: 'Group',
-      to: '/groups/feed'
+      to: '/groups'
     },
     {
       title: 'Friends',
@@ -56,8 +56,11 @@ const Header = () => {
   })
 
   return (
-    <div className='fixed bg-gray-50  w-full z-[50] top-0 h-[60px] shadow-sm flex justify-between items-center font-robo dark:bg-dark-100 px-5'>
-      <div className=' items-center gap-1 p-1 cursor-pointer hidden sm:flex'>
+    <div className='fixed bg-gray-50  w-full z-[50] top-0 h-[60px] shadow-sm border-b border-gray-200 flex justify-between items-center font-robo dark:bg-dark-100 px-5'>
+      <div
+        className=' items-center gap-1 p-1 cursor-pointer hidden sm:flex'
+        onClick={() => navigate('/')}
+      >
         <img
           src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNv64PGHyyyJkxGRb5g2RSRR93Uwb3snu5ZA&usqp=CAU'
           alt=''
@@ -84,15 +87,15 @@ const Header = () => {
       </div>
       <div className='flex items-center gap-2 header-notify'>
         <div
-          className='w-[30px] h-[30px] flex items-center justify-center rounded-full bg-gray-200 cursor-pointer'
+          className='w-[40px] h-[40px] flex items-center justify-center rounded-full bg-gray-200 cursor-pointer'
           onClick={() => {
             navigate('/message')
           }}
         >
-          <FaFacebookMessenger />
+          <FaFacebookMessenger size={20} />
         </div>
         <Popover
-          placement='topLeft'
+          placement='bottomRight'
           destroyPopupOnHide
           content={<Notify />}
           // title="Title"
@@ -103,8 +106,8 @@ const Header = () => {
           }}
           className='!relative'
         >
-          <div className='w-[30px] h-[30px] flex items-center justify-center rounded-full bg-gray-200 cursor-pointer'>
-            <IoIosNotifications size={19} />
+          <div className='w-[40px] h-[40px] flex items-center justify-center rounded-full bg-gray-200 cursor-pointer'>
+            <IoIosNotifications size={24} />
           </div>
           <div className='absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center'>
             <p className='text-[12px] text-gray-50 '>
@@ -119,10 +122,27 @@ const Header = () => {
                 items: [
                   {
                     key: '1',
-                    label: <Link to={'/profile/' + user?.id}>Profile</Link>
+                    label: (
+                      <Link to={'/profile/' + user?.id}>
+                        <div className='flex items-center gap-[4px]'>
+                          <FaUser size={14} />
+                          Profile
+                        </div>
+                      </Link>
+                    )
+                  },
+                  user?.role === 'admin' && {
+                    key: '2',
+                    label: (
+                      <Link to={'/admin/home'}>
+                        <div className='flex items-center'>
+                          <MdAdminPanelSettings /> Admin tool
+                        </div>
+                      </Link>
+                    )
                   },
                   {
-                    key: '2',
+                    key: '3',
                     label: (
                       <Popconfirm
                         title='Logout'
@@ -133,29 +153,28 @@ const Header = () => {
                         cancelText='No'
                         placement='leftBottom'
                       >
-                        Logout
+                        <div className='flex items-center '>
+                          <IoLogOut size={16} /> Logout
+                        </div>
                       </Popconfirm>
                     )
-                  },
-                  user?.role === 'admin' && {
-                    key: '3',
-                    label: <Link to={'/admin'}>Admin tool</Link>
                   }
                 ]
               }}
               placement='bottomLeft'
             >
+              {/* <Avatar size={40} src={user?.avatar?.url ?? defaulAvatar} /> */}
               <img
                 // referrerpolicy='no-referrer'
                 src={user?.avatar?.url ?? defaulAvatar}
                 alt=''
-                className='block w-full h-full object-cover rounded-full border-blue-700 shadow border-[1px]'
+                className='block w-[40px] h-[40px] object-cover rounded-full border-gray-300 shadow border-[1px] cursor-pointer'
               />
             </Dropdown>
           </div>
         ) : (
           <Link to={'/signin'} className='h-[40px] w-[40px] '>
-            <Avatar src={defaulAvatar} className='' />
+            {/* <Avatar src={defaulAvatar} className='' /> */}
           </Link>
         )}
       </div>
@@ -240,7 +259,7 @@ const SearchBox = () => {
             </div>
           </div>
         }
-        trigger='click'
+        // trigger='click'
         placement='bottomLeft'
         title=''
       >
@@ -253,9 +272,9 @@ const SearchBox = () => {
                 handleSearch()
               }}
             >
-              <input
+              <Input
                 placeholder='Search on Horizon'
-                className=' bg-gray-100 focus:w-[270px] w-[230px] h-[35px] py-1  pl-8 pr-6 appearance-none rounded-[15px] focus:outline-none  '
+                className=' !border-blue-600 !border-[1px] focus:w-[270px] w-[230px] h-[35px] py-1  pl-8 pr-6 appearance-none rounded-[15px]   '
                 type='text'
                 value={term}
                 onChange={e => {
@@ -264,7 +283,7 @@ const SearchBox = () => {
               />
             </form>
             <MdSearch
-              className='!absolute top-[6px] left-1 !text-gray-500'
+              className='!absolute top-[6px] left-[6px] !text-blue-600'
               size={25}
             />
             {/* {term && (

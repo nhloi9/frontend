@@ -1,3 +1,5 @@
+import {defaulAvatar} from '../Constants';
+
 export const getNameOfConversation = (conversation, userId) => {
 	if (!conversation) return '';
 	const otherMembers = conversation.members.filter(
@@ -9,22 +11,31 @@ export const getNameOfConversation = (conversation, userId) => {
 	} else {
 		if (conversation.name) return conversation.name;
 		else {
-			return otherMembers.map((item, index, array) => {
-				if (index !== array.length - 1) return item.user?.firstname + ', ';
-				else return item.user?.firstname;
-			});
+			return (
+				otherMembers
+					.map((item, index, array) => {
+						// if (index !== array.length - 1) return item.user?.firstname + ', ';
+						// else return item.user?.firstname;
+						return item?.user?.firstname;
+					})
+					.join(', ') || '   '
+			);
 		}
 	}
 };
 
 export function getImageOfConversation(conversation, userId) {
 	if (!conversation) return [];
+
 	const otherMembers = conversation.members.filter(
 		(item) => item.userId !== userId
 	);
-	if (conversation?.image) return conversation.image?.url;
+	if (otherMembers?.length === 0) return [];
+	if (conversation?.image) return [conversation.image?.url];
 	else {
-		return otherMembers.map((item) => item.user?.avatar?.url).slice(0, 2);
+		return otherMembers
+			.map((item) => item.user?.avatar?.url || defaulAvatar)
+			.slice(0, 2);
 	}
 }
 

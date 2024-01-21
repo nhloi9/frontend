@@ -45,6 +45,7 @@ const HomePage = () => {
           {/* <CardSection></CardSection> */}
           {/* <Main></Main> */}
           {/* </div> */}
+          <br />
         </div>
         <div className='hidden fixed h-screen xl:block right-0 w-[25%] max-w-[300px]'>
           <RightSide></RightSide>

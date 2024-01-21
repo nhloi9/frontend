@@ -90,14 +90,15 @@ const RightSide = ({ current, stories, setCurrent, type }) => {
         <>
           <div className=' react-story absolute bottom-3 w-full h-[50px] flex justify-center gap-2 items-center'>
             <div className='relative'>
-              <Input
+              <input
                 ref={inputCommentRef}
                 value={inputComment}
                 placeholder='Reply...'
                 onChange={e => {
                   setInputComment(e.target.value)
                 }}
-                className='peer bg-transparent w-[300px] rounded-2xl !text-white placeholder:text-gray-200  '
+                variant='filled'
+                className='peer px-3 py-[5px] bg-black border border-blue-500 outline-none focus:outline-none w-[300px] rounded-2xl !text-white placeholder:text-gray-200  '
                 // lg:focus:w-[500px] focus:pr-[40px]
               />
               <div className=' absolute block top-[6px] right-2 text-white cursor-pointer'>
@@ -114,7 +115,7 @@ const RightSide = ({ current, stories, setCurrent, type }) => {
               </div>
             </div>
             <SwipeableViews>
-              <div className='  flex h-[40px]  items-center pl-1   gap-3  '>
+              <div className='  flex h-[40px]  items-center px-1   gap-3  '>
                 {reacts.map((react, index) => (
                   <img
                     key={index}
@@ -151,7 +152,7 @@ const RightSide = ({ current, stories, setCurrent, type }) => {
                 >
                   <p className='text-gray-100 text-center '>
                     <LuMusic
-                      className='!text-gray-100 shadow-md translate-y-1'
+                      className='!text-gray-100  translate-y-1'
                       size={20}
                     />{' '}
                     {story?.song?.title_short} (
@@ -205,7 +206,7 @@ const RightSide = ({ current, stories, setCurrent, type }) => {
               onEnded={handleNext}
             ></ReactPlayer>
 
-            <div className='w-full px-3 absolute  top-0 left-0 shadow-lg'>
+            <div className='w-full px-3 absolute  top-0 left-0 '>
               <Progress
                 percent={percent * 100}
                 showInfo={false}
@@ -217,16 +218,20 @@ const RightSide = ({ current, stories, setCurrent, type }) => {
                 <Avatar
                   src={story.user?.avatar?.url ?? defaulAvatar}
                   size={'default'}
-                  className='shadow-lg'
+                  className=' cursor-pointer'
+                  onClick={() => navigate('/profile/' + story?.user?.id)}
                 />
-                <h1 className='text-white shadow'>
+                <h1
+                  className='text-white cursor-pointer hover:underline '
+                  onClick={() => navigate('/profile/' + story?.user?.id)}
+                >
                   {story?.user?.firstname + ' ' + story?.user?.lastname}
                 </h1>
               </div>
               <div className='flex gap-2 items-center'>
                 {play ? (
                   <FaPause
-                    className='!text-gray-50 shadow-lg cursor-pointer !font-[800] '
+                    className='!text-gray-50  cursor-pointer !font-[800] '
                     onClick={() => {
                       if (percent < 0.99) setPlay(false)
                     }}
@@ -234,7 +239,7 @@ const RightSide = ({ current, stories, setCurrent, type }) => {
                   />
                 ) : (
                   <FaPlay
-                    className='!text-gray-50 shadow-lg cursor-pointer !font-[800] '
+                    className='!text-gray-50  cursor-pointer !font-[800] '
                     onClick={() => {
                       if (percent < 0.99) setPlay(true)
                     }}
@@ -247,7 +252,7 @@ const RightSide = ({ current, stories, setCurrent, type }) => {
                       setMuted(false)
                     }}
                     size={24}
-                    className='!text-gray-50 shadow-lg cursor-pointer !font-[800] '
+                    className='!text-gray-50  cursor-pointer !font-[800] '
                   />
                 ) : (
                   <FaVolumeDown
@@ -255,7 +260,7 @@ const RightSide = ({ current, stories, setCurrent, type }) => {
                       setMuted(true)
                     }}
                     size={24}
-                    className='!text-gray-50 shadow-lg cursor-pointer !font-[800] '
+                    className='!text-gray-50  cursor-pointer !font-[800] '
                   />
                 )}
               </div>

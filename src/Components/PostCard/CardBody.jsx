@@ -1,22 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Avatar, Dropdown, Image as ImageAntd, Popover } from 'antd'
+import React, { useEffect, useState } from 'react'
+import { Dropdown, Image as ImageAntd } from 'antd'
 import { LuEyeOff } from 'react-icons/lu'
-import { IoEyeOutline } from 'react-icons/io5'
-import { IoIosVideocam, IoMdClose } from 'react-icons/io'
+import { IoIosVideocam } from 'react-icons/io'
 import { AiOutlineEye } from 'react-icons/ai'
 import GoogleMapReact from 'google-map-react'
 import { FaLocationDot } from 'react-icons/fa6'
 import { Link, useNavigate } from 'react-router-dom'
-import { MdOutlinePublic } from 'react-icons/md'
-import { FaLock } from 'react-icons/fa'
 import moment from 'moment'
 import CardHeader from './CardHeader'
-// import Slider from 'react-slick'
-// import 'slick-carousel/slick/slick.css'
-// import 'slick-carousel/slick/slick-theme.css'
-// import { useSelector } from 'react-redux'
 
 const CardBody = ({ post }) => {
+  const navigate = useNavigate()
   const [readMore, setReadMore] = useState(false)
   function cutString (text, maxChars) {
     if (text.length <= maxChars) {
@@ -27,11 +21,9 @@ const CardBody = ({ post }) => {
     const lastSpaceIndex = text.lastIndexOf(' ', maxChars)
 
     if (lastSpaceIndex !== -1) {
-      // Cut at the last space within the limit
-      return text.substring(0, lastSpaceIndex)
-    } else {
-      // If there is no space within the limit, cut at maxChars
       return text.substring(0, maxChars)
+    } else {
+      return text.substring(0, lastSpaceIndex)
     }
   }
   if (post?.text) {
@@ -39,11 +31,21 @@ const CardBody = ({ post }) => {
   }
 
   return (
-    <div className=' card_body'>
+    <div className=' card_body min-h-[100px]'>
       <div className='px-4  '>
+        {post?.hashtags?.map(hashtag => (
+          <span
+            className='cursor-pointer italic text-blue-500 hover:underline pr-2'
+            onClick={() => {
+              navigate('/hashtags/' + hashtag.name?.slice(1))
+            }}
+          >
+            {hashtag?.name}
+          </span>
+        ))}
         {post?.text && (
           <div>
-            {cutString(post?.text, 40)?.length === post?.text?.length ? (
+            {cutString(post?.text, 200)?.length === post?.text?.length ? (
               <Linkify>{post.text}</Linkify>
             ) : (
               // <p>{post.text}</p>
@@ -63,7 +65,7 @@ const CardBody = ({ post }) => {
                   </p>
                 ) : (
                   <p>
-                    <Linkify>{cutString(post?.text, 40)}</Linkify>
+                    <Linkify>{cutString(post?.text, 200)}</Linkify>
                     <span
                       onClick={() => setReadMore(true)}
                       className='ml-1 text-red-400 cursor-pointer'
@@ -135,21 +137,8 @@ const CustomImage = ({ image }) => (
     <ImageAntd
       preview={{
         destroyOnClose: true,
-        mask: <AiOutlineEye />
-        // ...(image.thumbnail && {
-        //   imageRender: () => (
-        //     <div className='w-[70%] h-[70%] border bg-gray-700 p-1'>
-        //       <video
-        //         disablePictureInPicture
-        //         // muted
-        //         controls
-        //         src={image.url}
-        //         className='w-full h-full object-contain'
-        //       />
-        //     </div>
-        //   ),
-        //   toolbarRender: () => null
-        // })
+        // mask: <AiOutlineEye />
+        mask: <div></div>
       }}
       src={image.thumbnail ?? image.url}
       alt=''
@@ -293,7 +282,7 @@ const ShowFileAndPlace = ({ post }) => {
   return (
     <div>
       {post?.files?.length > 0 && (
-        <div className='backdrop-contrast-[0.9] shadow-md mt-3 '>
+        <div className='backdrop-contrast-[0.9]  mt-3 '>
           <ImageAntd.PreviewGroup
             preview={{
               toolbarRender: (a, { current }) => {
@@ -332,9 +321,13 @@ const ShowFileAndPlace = ({ post }) => {
               </div>
             )}
             {post.files.length === 2 && (
-              <div className='w-full h-[400px] sm:h-[600px] grid grid-cols-2 gap-1  divide-x-[1px]'>
+              <div className='w-full h-[400px] bg-white sm:h-[600px] grid grid-cols-2 gap-[2px]  '>
                 {post.files.map((file, index, files) => (
-                  <div className=' w-full h-full  shadow-md '>
+                  <div
+                    className={`w-full h-full border border-gray-200  ${
+                      index === 0 ? 'border-l-0' : 'border-r-0'
+                    }`}
+                  >
                     <CustomImage image={file} />
                   </div>
                 ))}
@@ -342,17 +335,17 @@ const ShowFileAndPlace = ({ post }) => {
             )}
 
             {post.files.length === 3 && (
-              <div className='w-full h-[400px] sm:h-[600px] grid grid-rows-2 grid-flow-col gap-1  '>
-                <div className='row-span-2 bg-gray-50 shadow-md'>
+              <div className='w-full h-[400px] sm:h-[600px] grid grid-rows-2 grid-flow-col gap-[2px] bg-white '>
+                <div className='row-span-2  border border-l-0 border-gray-200 '>
                   <CustomImage
                     // list={post.files.map(file => file.url)}
                     image={post.files[0]}
                   />
                 </div>
-                <div class='col-span-1 bg-red-300'>
+                <div class='col-span-1  border  border-gray-200 border-r-0'>
                   <CustomImage image={post.files[1]} />
                 </div>
-                <div class='row-span-1 col-span-1 bg-black ...'>
+                <div class='row-span-1 col-span-1 border border-gray-200 border-r-0  '>
                   <CustomImage
                     list={post.files.map(file => file.url)}
                     image={post.files[2]}
@@ -362,9 +355,13 @@ const ShowFileAndPlace = ({ post }) => {
             )}
 
             {post.files.length === 4 && (
-              <div className='w-full h-[400px] sm:h-[600px] flex flex-wrap gap-1 '>
+              <div className='w-full h-[400px] sm:h-[600px] flex flex-wrap gap-[2px]  bg-white'>
                 {post.files.map((file, index, files) => (
-                  <div className=' w-[calc(50%-2px)] h-[calc(50%-2px)] shadow-md '>
+                  <div
+                    className={`border border-gray-200 w-[calc(50%-1px)] h-[calc(50%-1px)] ${
+                      index % 2 === 0 ? 'border-l-0' : 'border-r-0'
+                    } `}
+                  >
                     <CustomImage key={index} image={file} />
                   </div>
                 ))}
@@ -372,20 +369,20 @@ const ShowFileAndPlace = ({ post }) => {
             )}
 
             {post.files.length > 4 && (
-              <div className='w-full h-[400px] sm:h-[600px] flex flex-wrap gap-1 '>
+              <div className='w-full h-[400px] sm:h-[600px] flex flex-wrap gap-[2px] bg-white '>
                 {post.files.map((file, index, files) => (
                   <div
-                    className={`w-[calc(50%-2px)] h-[calc(50%-2px)] shadow-md ${
-                      index === 3 ? 'relative' : ''
-                    }  ${index > 3 && 'hidden'}`}
+                    className={`w-[calc(50%-1px)]  h-[calc(50%-1px)] border border-gray-200 ${
+                      index % 2 === 0 ? 'border-l-0' : 'border-r-0'
+                    } ${index === 3 ? 'relative  ' : ''}  ${
+                      index > 3 && 'hidden'
+                    }`}
                   >
                     <CustomImage image={file} />
                     {index === 3 && (
-                      <div className='z-[0] absolute top-[50%] left-[50%] cursor-pointer -translate-x-[50%] -translate-y-[50%] '>
-                        <h1 className='text-[22px]  font-[600]'>
-                          + {post.files.length - 4}
-                        </h1>
-                      </div>
+                      <h1 className=' opacity-100 !drop-shadow-2xl -translate-x-[50%] -translate-y-[50%] absolute z-50 top-[50%] left-[50%] text-[22px]  font-[600]'>
+                        + {post.files.length - 4}
+                      </h1>
                     )}
                   </div>
                 ))}

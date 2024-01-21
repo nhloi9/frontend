@@ -14,11 +14,6 @@ const ActivationPage = () => {
 
   useEffect(() => {
     if (loading === false) {
-      // if (isLogin) navigate('/')
-      // else {
-      //   dispatch(activeAcountAction(token))
-      //   navigate('/signin')
-      // }
       getApi(`users/active-acount/${token}`)
         .then(({ msg }) => {
           toast.success(msg)

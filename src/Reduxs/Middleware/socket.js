@@ -1,11 +1,10 @@
-import {message} from 'antd';
 import {addMessage, seenConversation} from '../Actions/conversationAction ';
 import {notifyTypes} from '../Types/notifyType';
 import {friendTypes} from '../Types/friendType';
 import {onlineTypes} from '../Types/onlineType';
 import {callTypes} from '../Types/callType';
 import toast from 'react-hot-toast';
-import tr from 'date-fns/esm/locale/tr/index';
+import {postTypes} from '../Types/postType';
 
 function spawnNotification(body, icon, title, url) {
 	const notification = new Notification(title, {body, icon});
@@ -17,7 +16,7 @@ function spawnNotification(body, icon, title, url) {
 
 export const socketMiddleware = (socket) => (params) => (next) => (action) => {
 	const {dispatch, getState} = params;
-	const {type} = action;
+	const {type, payload} = action;
 
 	switch (type) {
 		case 'socket/connect':
@@ -213,6 +212,10 @@ export const socketMiddleware = (socket) => (params) => (next) => (action) => {
 				}
 			});
 
+			socket.on('updatePost', (post) => {
+				dispatch({type: postTypes.UPDATE_POST, payload: post});
+			});
+
 			//receive message
 			// socket.on('message', (message) => {
 			// 	//update chat
@@ -284,6 +287,10 @@ export const socketMiddleware = (socket) => (params) => (next) => (action) => {
 			// 	dispatch({type: CALL_TYPES.CALL, payload: null});
 			// });
 
+			break;
+
+		case 'POST':
+			socket.emit('updatePost', payload);
 			break;
 
 		case 'socket/disconnect':

@@ -32,6 +32,7 @@ const PostModal = ({ post, isModalOpen, setIsModalOpen }) => {
         <div className='flex justify-center pt-2 pb-4'>
           <h1 className='text-[20px] '>{post.user?.firstname}'s Post</h1>
         </div>
+        <hr className='h-[1px] bg-gray-400' />
         <div className='max-h-[70vh] overflow-y-scroll scroll-min'>
           <CardHeader post={post} />
           <CardBody post={post} />

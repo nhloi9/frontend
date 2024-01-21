@@ -1,31 +1,20 @@
 import React, { useRef, useState, useEffect, useContext } from 'react'
 import nature from '../../assets/images/nature.jpg'
-// import { Tooltip } from '@material-tailwind/react'
-// import { Avatar } from '@material-tailwind/react'
-import avatar from '../../assets/images/avatar.jpg'
-import job from '../../assets/images/job.png'
-import location from '../../assets/images/location.png'
-import facebook from '../../assets/images/facebook.png'
-import twitter from '../../assets/images/twitter.png'
 import laptop from '../../assets/images/laptop.jpg'
 import media from '../../assets/images/media.jpg'
 import apps from '../../assets/images/apps.jpg'
 import tik from '../../assets/images/tik.jpg'
 import { useSelector } from 'react-redux'
-import { Avatar } from 'antd'
 import { defaulAvatar } from '../../Constants'
 import { useNavigate } from 'react-router-dom'
 import { FaFacebookMessenger, FaUserFriends } from 'react-icons/fa'
 import { HiMiniUserGroup } from 'react-icons/hi2'
 import { IoBookmark } from 'react-icons/io5'
-import { CiBookmark } from 'react-icons/ci'
-
-// import { AuthContext } from '../AppContext/AppContext'
+import Avatar from './Avatar'
 
 const LeftSide = ({ type }) => {
   const [data, setData] = useState([])
   const count = useRef(0)
-  // const { user, userData } = useContext(AuthContext)
 
   const handleRandom = arr => {
     setData(arr[Math.floor(Math.random() * arr?.length)])
@@ -87,7 +76,7 @@ const LeftSide = ({ type }) => {
   const navigate = useNavigate()
 
   return (
-    <div className=' relative left-side w-full h-full   bg-gray-100    overflow-y-hidden hover:overflow-y-scroll scroll-min  pb-4 border-2 rounded-r-xl shadow-lg'>
+    <div className=' relative left-side w-full h-full   bg-gray-100    overflow-y-hidden hover:overflow-y-scroll scroll-min  pb-4   shadow-lg'>
       <div className='flex flex-col gap-1 pt-4 px-1 '>
         <div
           className='w-full h-[52px] px-2 flex items-center hover:bg-gray-200 cursor-pointer rounded-md'
@@ -115,7 +104,7 @@ const LeftSide = ({ type }) => {
         <div
           className='w-full h-[52px] px-2 flex items-center hover:bg-gray-200 cursor-pointer rounded-md'
           onClick={() => {
-            navigate('/groups/feed')
+            navigate('/groups')
           }}
         >
           <div className='h-full w-[40px] gap-1 flex items-center justify-center'>

@@ -14,6 +14,8 @@ import { upload } from '../utils/imageUpload'
 import { postTypes } from '../Reduxs/Types/postType'
 import { storyTypes } from '../Reduxs/Types/storyType'
 import { getProfileStoriesAction } from '../Reduxs/Actions/storyAction'
+import { defaultCoverImage } from '../Constants'
+import { globalTypes } from '../Reduxs/Types/globalType'
 
 const ProfilePage = () => {
   const dispatch = useDispatch()
@@ -46,15 +48,18 @@ const ProfilePage = () => {
   }
 
   const confirm = () => {
+    dispatch({ type: globalTypes.ALERT, payload: { loading: true } })
     upload([coverImage])
       .then(images => {
         dispatch(updateCoverImageAction(images[0]))
         setShowUpdateCoverImage(false)
       })
       .catch(err => {
+        dispatch({ type: globalTypes.ALERT, payload: { loading: false } })
+
         toast.error(err)
         setShowUpdateCoverImage(false)
-        setCoverImage(me.detail?.coverImage.url)
+        setCoverImage(me.detail?.coverImage?.url)
       })
   }
 
@@ -114,19 +119,19 @@ const ProfilePage = () => {
       {!loading && userInfo && (
         <div className='min-h-screen bg-[#fcf8f8]  '>
           <div className='w-full h-[120px] md:h-[350px] bg-[#e4d8d8] relative'>
-            {coverImage && (
+            {
               <img
                 src={
                   typeof coverImage === 'string'
                     ? coverImage
                     : coverImage instanceof File
                     ? window.URL.createObjectURL(coverImage)
-                    : ''
+                    : defaultCoverImage
                 }
                 className='block w-full h-full object-cover'
                 alt={userInfo.fullname}
               />
-            )}
+            }
             {id === me.id.toString() && (
               <label
                 htmlFor='input-cover-image'

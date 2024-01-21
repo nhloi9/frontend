@@ -14,9 +14,9 @@ const Stories = () => {
   return (
     <div className='home-story mt-7 w-full '>
       <SwipeableViews>
-        <div className=' w-max  gap-3 flex overflow-hidden '>
+        <div className=' w-max  gap-3 flex'>
           <div
-            className='w-[140px]  relative h-[250px] shadow-xl rounded-lg  cursor-pointer hover:opacity-70 '
+            className='w-[140px]  relative h-[250px] shadow-xl rounded-lg border border-gray-300  cursor-pointer hover:opacity-70 '
             onClick={() => navigate('/stories/create')}
           >
             <img
@@ -31,22 +31,18 @@ const Stories = () => {
                 className=' !text-[30px]'
               />
             </div>
-            <div className='absolute shadow-md bottom-0 h-[15%] rounded-b-lg left-0 w-full bg-gray-50  px-3 flex justify-end  flex-col items-center py-1 '>
-              <h1 className='text-gray-700'>Create story</h1>
+            <div className='absolute  bottom-0 h-[15%] rounded-b-lg left-0 w-full bg-gray-50  px-3 flex justify-end  flex-col items-center py-1 '>
+              <h1 className='text-gray-700 font-[600] text-[14px]'>
+                Create story
+              </h1>
             </div>
             <div className='absolute top-3 left-0 w-full  px-3 '>
               <Avatar className='border-[3px] border-blue-500' />
             </div>
           </div>
           {stories.map((story, index) => (
-            // <Link
-            //   to={{
-            //     pathname: '/stories',
-            //     state: 1
-            //   }}
-            // >
             <div
-              className='w-[140px]  relative h-[250px] rounded-md  cursor-pointer'
+              className='w-[140px]  relative h-[250px] rounded-lg  cursor-pointer border border-gray-300'
               key={story.id}
               onClick={() => {
                 navigate('/stories', {
@@ -56,10 +52,10 @@ const Stories = () => {
             >
               <video
                 src={story.video?.url}
-                className='w-full h-full object-cover rounded-lg shadow'
+                className='w-full h-full object-cover rounded-lg '
               ></video>
               <div className='absolute bottom-1 left-0 w-full  px-3 text-center'>
-                <p className='text-gray-200 shadow-md font-[600] text-[13px]'>
+                <p className='text-gray-200 font-[600] text-[13px]'>
                   {story.user?.firstname + ' ' + story.user?.lastname}
                 </p>
               </div>

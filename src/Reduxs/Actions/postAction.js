@@ -10,7 +10,7 @@ import {reacts} from '../../Constants';
 import toast from 'react-hot-toast';
 
 export const createPostAction =
-	({content, photos, privacy, sentisment, location, tags, groupId}) =>
+	({content, photos, privacy, sentisment, location, hashtags, tags, groupId}) =>
 	async (dispatch, getState) => {
 		console.log(content);
 		try {
@@ -38,6 +38,7 @@ export const createPostAction =
 						(thumbnail) => image?.name?.slice(0, 4) === thumbnail?.name?.slice(0, 4)
 					)?.url,
 				})),
+				hashtags,
 				text: content,
 				privacy,
 				feel: sentisment,
@@ -61,21 +62,6 @@ export const createPostAction =
 							: 'You have successfully created the post',
 				},
 			});
-			// const msg = {
-			// 	receiver: getState().auth.user.followers.map((user) => user._id),
-			// 	target: res.data.post._id,
-			// 	module: 'post',
-			// 	url: `/post/${res.data.post._id}`,
-			// 	text: 'added a new post',
-			// 	image: images[0].secure_url,
-			// 	content,
-			// };
-			// dispatch(createNotify(msg));
-			// socket.emit(
-			// 	'join_post',
-			// 	// res.data.posts.map((post) => post._id)
-			// 	[res?.data.post._id]
-			// );
 		} catch (error) {
 			console.log(error);
 			dispatch({type: globalTypes.ALERT, payload: {loading: false}});
@@ -99,6 +85,7 @@ export const sharePostAction =
 				shareId: postId,
 				privacy: groupId ? 'public' : 'friend',
 				groupId,
+				hashtags: [],
 			});
 
 			if (post?.accepted === false) {
@@ -143,7 +130,7 @@ export const sharePostAction =
 	};
 
 export const updatePostAction =
-	({content, photos, privacy, sentisment, location, tags, postId}) =>
+	({content, photos, privacy, sentisment, hashtags, location, tags, postId}) =>
 	async (dispatch, getState) => {
 		try {
 			dispatch({
@@ -190,6 +177,7 @@ export const updatePostAction =
 						)?.url,
 					})),
 				],
+				hashtags,
 				text: content,
 				privacy,
 				feel: sentisment,
@@ -346,47 +334,6 @@ export const createCommentAction =
 		}
 	};
 
-// export const likeComment = (comment, post) => async (dispatch, getState) => {
-// 	try {
-// 		await putDataAPI(`/comment/${comment._id}/like`);
-// 		const newComment = {
-// 			...comment,
-// 			likes: [...comment.likes, getState().auth.user],
-// 		};
-// 		const newPost = {
-// 			...post,
-// 			comments: updateArray(post.comments, newComment),
-// 		};
-
-// 		dispatch({
-// 			type: POST_TYPES.UPDATE_POST,
-// 			payload: newPost,
-// 		});
-// 	} catch (err) {
-// 		console.log(err);
-// 	}
-// };
-// export const unlikeComment = (comment, post) => async (dispatch, getState) => {
-// 	try {
-// 		await putDataAPI(`/comment/${comment._id}/unlike`);
-// 		const newComment = {
-// 			...comment,
-// 			likes: removeFromArray(comment.likes, getState().auth.user),
-// 		};
-// 		const newPost = {
-// 			...post,
-// 			comments: updateArray(post.comments, newComment),
-// 		};
-
-// 		dispatch({
-// 			type: POST_TYPES.UPDATE_POST,
-// 			payload: newPost,
-// 		});
-// 	} catch (err) {
-// 		console.log(err);
-// 	}
-// };
-
 export const reactComment =
 	(comment, postId, type) => async (dispatch, getState) => {
 		try {
@@ -438,6 +385,28 @@ export const unReactComment =
 				const newPost = {
 					...post,
 					comments: updateToArray(post.comments, updatedComment),
+				};
+				dispatch({
+					type: postTypes.POST,
+					payload: newPost,
+				});
+			}
+		} catch (err) {
+			toast.error(err);
+		}
+	};
+
+export const deleteCommentAction =
+	(commentId, postId) => async (dispatch, getState) => {
+		try {
+			await deleteApi(`/comments/${commentId}`);
+
+			const post = getState().post?.posts?.find((item) => item.id === postId);
+
+			if (post) {
+				const newPost = {
+					...post,
+					comments: post.comments?.filter((item) => item?.id !== commentId),
 				};
 				dispatch({
 					type: postTypes.POST,
@@ -515,6 +484,15 @@ export const unsavePostsAction = (postId) => async (dispatch, getState) => {
 	try {
 		await postApi('/posts/' + postId + '/un-save');
 		dispatch({type: postTypes.UN_SAVE_POST, payload: postId});
+	} catch (error) {
+		toast.error(error);
+	}
+};
+
+export const deletePost = (postId) => async (dispatch, getState) => {
+	try {
+		await deleteApi('/posts/' + postId);
+		dispatch({type: postTypes.DELETE_POST, payload: postId});
 	} catch (error) {
 		toast.error(error);
 	}

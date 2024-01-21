@@ -1,16 +1,3 @@
-// import React, { useEffect, useState } from 'react'
-// import Avatar from '../Avatar'
-// import UserCard from '../UserCard'
-// import { getDataApi } from '../../utils/fetchData'
-// import SearchOffIcon from '@mui/icons-material/SearchOff'
-// import SearchIcon from '@mui/icons-material/Search'
-// import { useDispatch, useSelector } from 'react-redux'
-// import {
-//   CONVERSATION_TYPES,
-//   createConversation,
-//   seenConversation
-// } from '../../redux/actions/conversationAction'
-
 import { Avatar, Button, Input, Modal } from 'antd'
 import moment from 'moment'
 
@@ -27,15 +14,13 @@ import {
   getImageOfConversation,
   getNameOfConversation
 } from '../../utils/conversation'
-import { useNavigate, useParams } from 'react-router-dom'
-import { CiSearch } from 'react-icons/ci'
+import { useNavigate } from 'react-router-dom'
 import { getApi, postApi } from '../../network/api'
-import { defaulAvatar } from '../../Constants'
+import { defaulAvatar, defaultImageConversation } from '../../Constants'
 import { MultiSelect } from 'react-multi-select-component'
-import { tr } from 'date-fns/locale'
-import { socket } from '../../socket'
 import { addMessage } from '../../Reduxs/Actions/conversationAction '
 import toast from 'react-hot-toast'
+import { socket } from '../../socket'
 
 const LeftSide = ({ id }) => {
   const navigate = useNavigate()
@@ -183,16 +168,19 @@ const LeftSide = ({ id }) => {
                 />
               )
             })
-          : users.map(user => (
-              <div
-                className='my-1'
-                onClick={() => {
-                  handleClickUser(user)
-                }}
-              >
-                <UserCard user={user} msg={true} />
-              </div>
-            ))}
+          : users.map(
+              item =>
+                item?.id !== user?.id && (
+                  <div
+                    className='my-1'
+                    onClick={() => {
+                      handleClickUser(item)
+                    }}
+                  >
+                    <UserCard user={item} msg={true} />
+                  </div>
+                )
+            )}
       </div>
       <Invite
         // handleInvite={handleInvite}
@@ -248,7 +236,9 @@ const ConversationCard = ({
             {online && (
               <div className='w-3 h-3 bg-green-700 z-10 border border-white rounded-full absolute bottom-[2px] right-[2px]'></div>
             )}
-            {getImageOfConversation(conversation, userId).length === 1 ? (
+            {getImageOfConversation(conversation, userId).length === 0 ? (
+              <Avatar size={40} src={defaultImageConversation} />
+            ) : getImageOfConversation(conversation, userId).length === 1 ? (
               <Avatar
                 size={40}
                 src={
@@ -339,10 +329,11 @@ const Invite = ({ isModalOpen, handleCancel, friends }) => {
         data: { message: messageData }
       } = await postApi('/messages', {
         conversationId: conversation.id,
-        text: message
+        text: message,
+        files: []
       })
       socket.emit('addMessage', {
-        message
+        message: messageData
       })
       dispatch(addMessage(messageData))
       navigate('/message/' + conversation?.id)

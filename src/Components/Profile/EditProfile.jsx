@@ -61,16 +61,12 @@ const EditProfile = ({ open, onCancel, setOpenResetPassword }) => {
   const { user } = useSelector(state => state.auth)
   const [form] = Form.useForm()
   const [selectedCountry, setSelectedCountry] = useState(
-    // user.detail?.country
-    //   ? {
-    //       value: user.detail.country,
-    //       label: Country.getCountryByCode(user.detail.country).name
-    //     }
-    //   : null
-    {
-      value: 'VN',
-      label: 'Việt Nam'
-    }
+    user.detail?.country
+      ? {
+          value: 'VN',
+          label: 'Việt Nam'
+        }
+      : null
   )
   const [birthday, setBirthday] = useState(user.birthday)
 
@@ -99,7 +95,7 @@ const EditProfile = ({ open, onCancel, setOpenResetPassword }) => {
           label: item.name
         }))
       )
-    }
+    } else setStateOptions([])
   }, [selectedCountry])
 
   return (
@@ -238,8 +234,8 @@ const EditProfile = ({ open, onCancel, setOpenResetPassword }) => {
               width: 'calc(50% - 8px)'
             }}
           >
-            <p>country</p>
             <SelectReact
+              isClearable
               placeholder='Country'
               value={selectedCountry}
               onChange={data => {
@@ -256,11 +252,12 @@ const EditProfile = ({ open, onCancel, setOpenResetPassword }) => {
               margin: '0 8px'
             }}
           >
-            <p>city</p>
             <SelectReact
+              isClearable
               placeholder='city'
               value={selectedState}
               onChange={data => {
+                console.log(data)
                 setSelectedState(data)
               }}
               options={stateOptions}

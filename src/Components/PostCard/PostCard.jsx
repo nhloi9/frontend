@@ -32,18 +32,6 @@ const PostCard = ({ post, type }) => {
         setIsModalOpen={setIsModalOpen}
       />
 
-      {/* <div
-        className='!pointer-events-none '
-        onClick={() => {
-          return
-        }}
-      >
-        <InputComment
-          createComment={createComment}
-          post={post}
-          disable={true}
-        />
-      </div> */}
       <br />
       <div
         className='mx-3'

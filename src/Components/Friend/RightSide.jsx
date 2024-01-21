@@ -64,7 +64,7 @@ export const RightSide = () => {
                 </div>
                 {/* <br /> */}
                 {suggestions?.length > 0 && (
-                  <hr className='h-[1px] bg-gray-400 pb-5' />
+                  <hr className='h-[1px] bg-gray-400 mb-5' />
                 )}
               </>
             )}
@@ -141,27 +141,7 @@ export const RightSide = () => {
 
 const AllFriends = ({ friends }) => {
   const [term, setTerm] = useState('')
-  // const filterFriends = () => {
-  //   if (!term?.trim()) return friends
-  //   const tokens = term
-  //     ?.trim()
-  //     .split(' ')
-  //     ?.filter(item => item !== '')
-  //   return friends?.filter(friend =>
-  //     tokens?.every(token =>
-  //       (friend?.firstname + ' ' + friend?.lastname)
-  //         .normalize('NFD')
-  //         .replace(/[\u0300-\u036f]/g, '')
-  //         .toLowerCase()
-  //         ?.includes(
-  //           token
-  //             ?.normalize('NFD')
-  //             .replace(/[\u0300-\u036f]/g, '')
-  //             .toLowerCase()
-  //         )
-  //     )
-  //   )
-  // }
+
   return (
     <div className=' h-full bg-[#f0f2f5] pt-[30px] px-[20px]'>
       <div>

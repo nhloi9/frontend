@@ -36,10 +36,6 @@ export const getProfileStoriesAction =
 				type: storyTypes.GET_HOME_STORIES_SUCCESS,
 				payload: res.data.stories,
 			});
-			dispatch({
-				type: storyTypes.STORY_PROFILE,
-				payload: 'profile',
-			});
 		} catch (error) {
 			// dispatch({type: globalTypes.ALERT, payload: {loading: false}});
 		}
