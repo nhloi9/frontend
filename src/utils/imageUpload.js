@@ -1,3 +1,4 @@
+import {backendUrl} from '../Constants';
 import {postApi} from '../network/api';
 export const validImage = (file) => {
 	if (!file) return 'File does not exist';
@@ -7,7 +8,7 @@ export const validImage = (file) => {
 	return '';
 };
 export const upload = async (files) => {
-	const url = 'http://localhost:3333/files';
+	const url = backendUrl + '/files';
 	const promises = [];
 
 	files.forEach((file) => {
