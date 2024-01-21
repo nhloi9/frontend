@@ -6,6 +6,9 @@ const axios = Axios.create({
 	baseURL: backendUrl,
 	timeout: 5000,
 	withCredentials: true,
+	headers: {
+		'Content-Type': 'application/json',
+	},
 });
 
 const omitObject = (obj) => {
