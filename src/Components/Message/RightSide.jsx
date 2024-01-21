@@ -16,14 +16,7 @@ import { FiCamera } from 'react-icons/fi'
 import { format, startOfWeek } from 'date-fns'
 import { useNavigate, useParams } from 'react-router-dom'
 import { deleteApi, getApi, postApi, putApi } from '../../network/api'
-import {
-  Avatar as AntAvatar,
-  Button,
-  Input,
-  Modal,
-  Popconfirm,
-  Tooltip
-} from 'antd'
+import { Avatar as AntAvatar, Button, Modal, Popconfirm, Tooltip } from 'antd'
 import {
   defaulAvatar,
   defaultCoverImage,

@@ -38,7 +38,7 @@ import { AiOutlineEye } from 'react-icons/ai'
 import { generateVideoThumbnails } from '@rajesh896/video-thumbnails-generator'
 import { BiSolidLockAlt } from 'react-icons/bi'
 import { getApi } from '../../network/api'
-import { el } from 'date-fns/locale'
+// import { el } from 'date-fns/locale'
 
 function dataURLtoFile (dataURL, filename = 'file') {
   const arr = dataURL.split(',')

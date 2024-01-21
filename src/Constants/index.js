@@ -49,6 +49,10 @@ export const reacts = [
 	},
 ];
 
+export const backendUrl = process.env.REACT_APP_BACKEND_URL;
+export const baseUrl = process.env.REACT_APP_BASE_URL;
+export const backendHost = process.env.REACT_APP_BACKEND_HOST;
+
 export const tomtomApiKey = 'UB1JyOMM8IzEGrYwP2gNjM7mKxP07gaC';
 // export const defaulAvatar = require('../assets/images/defaut_avatar.jpg');
 export const defaulAvatar =

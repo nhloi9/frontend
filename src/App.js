@@ -54,6 +54,7 @@ function App() {
 	// const {activePost} = useSelector((state) => state.homePost);
 
 	useEffect(() => {
+		console.log(process.env.BACKEND_URL);
 		dispatch(checkAuthAction());
 	}, [dispatch]);
 

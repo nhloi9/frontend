@@ -1,8 +1,9 @@
 import Axios from 'axios';
 import qs from 'qs';
+import {backendUrl} from '../Constants';
 
 const axios = Axios.create({
-	baseURL: 'http://localhost:3333',
+	baseURL: backendUrl,
 	timeout: 5000,
 	withCredentials: true,
 });

@@ -1,7 +1,5 @@
 import {io} from 'socket.io-client';
-// const socket = io('http://localhost:3333', {
-// 	autoConnect: false,
-// });
+import {backendHost} from './Constants';
 
 class Socket {
 	constructor() {
@@ -9,7 +7,7 @@ class Socket {
 	}
 	connect(token) {
 		this.disconnect();
-		this.socket = io('ws://localhost:3333', {
+		this.socket = io('ws://' + backendHost, {
 			auth: {
 				token,
 			},

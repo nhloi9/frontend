@@ -14,10 +14,9 @@ import { FaLock, FaRegCopy } from 'react-icons/fa'
 import { IoIosMore } from 'react-icons/io'
 import CreatePost from '../Home/CreatePost'
 import { TbMessageReport } from 'react-icons/tb'
-import { ca } from 'date-fns/locale'
 import { postApi } from '../../network/api'
 import Avatar from '../Home/Avatar'
-import { defaulAvatar } from '../../Constants'
+import { baseUrl, defaulAvatar } from '../../Constants'
 import { globalTypes } from '../../Reduxs/Types/globalType'
 import { deletePost } from '../../Reduxs/Actions/postAction'
 import toast from 'react-hot-toast'
@@ -37,7 +36,7 @@ const CardHeader = ({ post, type, disableEdit }) => {
   }
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(`http://localhost:3000/post/${post.id}`)
+    navigator.clipboard.writeText(baseUrl + `/post/${post.id}`)
     toast.success(`Copied `)
   }
 

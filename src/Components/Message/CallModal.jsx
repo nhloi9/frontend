@@ -201,9 +201,12 @@ const CallModal = () => {
 
   // enable it
   useEffect(() => {
-    setInterval(() => {
+    const rerenderInterval = setInterval(() => {
       setForceRender(Math.random())
     }, 1000)
+    return () => {
+      clearInterval(rerenderInterval)
+    }
   }, [])
 
   useEffect(() => {

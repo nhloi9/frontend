@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { signupAction } from '../Reduxs/Actions/authAction'
 import { globalTypes } from '../Reduxs/Types/globalType'
 import { postApi } from '../network/api'
+import { backendUrl } from '../Constants'
 
 const Signup = () => {
   const navigate = useNavigate()
@@ -69,7 +70,7 @@ const Signup = () => {
             <div
               className='rounded-3xl h-12  border-black border-[2px] cursor-pointer flex items-center'
               onClick={() => {
-                window.location.href = 'http://localhost:3333/users/google/url'
+                window.location.href = backendUrl + '/users/google/url'
               }}
             >
               <img
