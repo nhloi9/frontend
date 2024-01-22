@@ -7,7 +7,8 @@ class Socket {
 	}
 	connect(token) {
 		this.disconnect();
-		this.socket = io('wss://' + backendHost, {
+		// this.socket = io('wss://' + backendHost, {
+		this.socket = io('ws://' + backendHost, {
 			withCredentials: true,
 			auth: {
 				token,

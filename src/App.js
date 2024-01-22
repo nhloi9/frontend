@@ -4,8 +4,6 @@ import {Toaster} from 'react-hot-toast';
 
 import './i18n';
 
-import {AiOutlineGlobal} from 'react-icons/ai';
-
 import NoPage from './Pages/NoPage';
 import Signin from './Pages/Signin';
 import {Suspense, useEffect} from 'react';

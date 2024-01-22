@@ -41,6 +41,7 @@ import { conversationTypes } from '../../Reduxs/Types/conversationType'
 import { CiEdit } from 'react-icons/ci'
 import { MdLogout, MdOutlineDeleteForever } from 'react-icons/md'
 import { MultiSelect } from 'react-multi-select-component'
+import Peer from 'peerjs'
 
 const RightSide = ({ id }) => {
   const [showInfo, setShowInfo] = useState(false)
@@ -261,6 +262,22 @@ const RightSide = ({ id }) => {
     }
   }, [id, dispatch, user.id])
 
+  // useEffect(() => {
+  //   const peer = new Peer(socket.socket.id, {
+  //     // host: 'localhost',
+  //     // host: backendHost,
+  //     host: 'horizon-backend-baxc.onrender.com',
+  //     port: 1000,
+  //     path: '/',
+  //     secure: true
+  //   })
+  //   console.log({ peer })
+
+  //   return () => {
+  //     peer?.destroy()
+  //   }
+  // }, [])
+
   return (
     <div className='h-screen w-[calc(100%-350px)] pt-[50px]   right-side-message'>
       {conversation ? (
@@ -311,13 +328,6 @@ const RightSide = ({ id }) => {
                 </div>
               </div>
               <div className='flex gap-3 px-2'>
-                <IoCall
-                  size={23}
-                  className='cursor-pointer text-[#ff0d9e]'
-                  onClick={() => {
-                    handleCall({ video: false })
-                  }}
-                />
                 <FcVideoCall
                   size={23}
                   onClick={() => handleCall({ video: true })}

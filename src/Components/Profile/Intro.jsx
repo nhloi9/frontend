@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Avatar, Button, Image, Modal, Tooltip } from 'antd'
+import { Avatar, Button, Image, Modal, Spin, Tooltip } from 'antd'
 import { EditOutlined } from '@ant-design/icons'
 import { useTranslation } from 'react-i18next'
 import { GiPositionMarker } from 'react-icons/gi'
@@ -55,7 +55,7 @@ const types = [
   }
 ]
 
-const Intro = ({ userInfo, own, files, friends }) => {
+const Intro = ({ userInfo, own, files, friends, load }) => {
   let [searchParams, setSearchParams] = useSearchParams()
   const { user: me } = useSelector(state => state.auth)
   const { posts } = useSelector(state => state.post)
@@ -121,7 +121,7 @@ const Intro = ({ userInfo, own, files, friends }) => {
                   }
                   // referrerpolicy='no-referrer'
                   alt=''
-                  className='w-full h-full block rounded-full  border-[2px] border-white '
+                  className='w-full h-full block rounded-full  border-[1px] border-gray-200 '
                 />
                 {own && (
                   <label htmlFor='input-avatar'>
@@ -242,6 +242,11 @@ const Intro = ({ userInfo, own, files, friends }) => {
           </div>
           <div className='  min-h-screen w-full md:w-[calc(100%-350px)]'>
             {own && <Status />}
+            {load && (
+              <div className='w-min mx-auto mt-[50px]'>
+                <Spin />
+              </div>
+            )}
             <Posts posts={posts} />
           </div>
         </div>
@@ -270,10 +275,12 @@ const Intro = ({ userInfo, own, files, friends }) => {
                   />
                   <div className='absolute top-1 right-1 z-10'>
                     <Tooltip title='Go to post'>
-                      <MdArrowOutward
-                        className='!text-white !text-[25px] cursor-pointer'
+                      <div
+                        className='w-6 h-6 flex items-center cursor-pointer justify-center rounded-sm bg-gray-200 shadow'
                         onClick={() => navigate('/post/' + item?.postId)}
-                      />
+                      >
+                        <MdArrowOutward className='!text-gray-900  !text-[25px] ' />
+                      </div>
                     </Tooltip>
                   </div>
                 </div>
@@ -322,10 +329,12 @@ const Intro = ({ userInfo, own, files, friends }) => {
                   />
                   <div className='absolute top-1 right-1 z-10'>
                     <Tooltip title='Go to post'>
-                      <MdArrowOutward
-                        className='!text-white !text-[25px] cursor-pointer'
+                      <div
+                        className='w-6 h-6 flex items-center cursor-pointer justify-center rounded-sm bg-gray-200 shadow'
                         onClick={() => navigate('/post/' + item?.postId)}
-                      />
+                      >
+                        <MdArrowOutward className='!text-gray-900  !text-[25px] ' />
+                      </div>
                     </Tooltip>
                   </div>
                   <IoIosVideocam

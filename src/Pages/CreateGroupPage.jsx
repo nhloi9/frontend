@@ -73,7 +73,7 @@ const CreateGroupPage = () => {
                 <Avatar
                   size={'large'}
                   className='!border-[1px] !shadow-md border-gray-200'
-                  src={user?.avatar?.url}
+                  src={user?.avatar?.url ?? defaulAvatar}
                 />
                 <div>
                   <h3>{user?.firstname + ' ' + user?.lastname}</h3>
@@ -180,7 +180,7 @@ const CreateGroupPage = () => {
                         <Avatar
                           src={
                             friends.find(item => item.id === option.value)
-                              ?.avatar?.url
+                              ?.avatar?.url || defaulAvatar
                           }
                         />
                         <p>{option.label}</p>

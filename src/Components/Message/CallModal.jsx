@@ -10,15 +10,13 @@ import {
   getImageOfConversation,
   getNameOfConversation
 } from '../../utils/conversation'
-import { backendHost, defaulAvatar } from '../../Constants'
+import { defaulAvatar } from '../../Constants'
 import { socket } from '../../socket'
 import toast from 'react-hot-toast'
 import { callTypes } from '../../Reduxs/Types/callType'
-import { getApi } from '../../network/api'
 import { IoMic } from 'react-icons/io5'
 import { IoIosMicOff } from 'react-icons/io'
 import { FaVideo, FaVideoSlash } from 'react-icons/fa6'
-import { AiTwotonePushpin } from 'react-icons/ai'
 
 const CallModal = () => {
   const [changeData, setChangeData] = useState({})
@@ -41,11 +39,11 @@ const CallModal = () => {
   const timerRef = useRef(null)
 
   const handleAnswere = () => {
-    setAnswere(true)
     createStream()
   }
 
   const handleEndCall = () => {
+    console.log('end call')
     handleCloseMedia()
     // socket.emit('endCall', callData)
     socket.emit('leftCall', callData?.conversation?.id)
@@ -61,24 +59,6 @@ const CallModal = () => {
     }
   }, [answere])
 
-  useEffect(() => {
-    // window.peer.on('call', call => {
-    //   navigator.mediaDevices
-    //     .getUserMedia({ video: call.video, audio: true })
-    //     .then(stream => {
-    //       call.answer(stream)
-    //     })
-    //     .catch(err => {
-    //       console.error('Failed to get local stream', err)
-    //     })
-    //   return () => window.peer.removeListener('call')
-    // })
-  }, [])
-
-  useEffect(() => {}, [])
-
-  console.log(user?.avatar?.url ?? defaulAvatar)
-
   function createStream () {
     getMedia({ video: true, audio: true })
       .then(stream => {
@@ -92,6 +72,7 @@ const CallModal = () => {
 
         socket.emit('joinRoom', callData?.conversation?.id)
         socket.on('allUsers', ids => {
+          setAnswere(true)
           console.log({ peer: myPeer.current })
           console.log({ ids })
           const peers = []
@@ -118,7 +99,9 @@ const CallModal = () => {
         })
       })
       .catch(err => {
-        console.log({ err })
+        toast.error(
+          "You need to give the app permission to access the device's audio or camera"
+        )
       })
 
     console.log({ peers })
@@ -156,21 +139,20 @@ const CallModal = () => {
   //create peer object
   useEffect(() => {
     const peer = new Peer(socket.socket.id, {
+      host: 'peerserver-7j9x.onrender.com',
       // host: 'localhost',
-      host: backendHost,
-      port: 9000,
-      path: '/',
+      port: 443,
+      path: '/myapp',
       secure: true
     })
+    console.log({ peer })
 
     peer.on('call', function (call) {
       callsRef.current.push(call)
       console.log('receive call')
-      navigator.mediaDevices
-        .getUserMedia({ video: true, audio: true })
-        .then(stream => {
-          call.answer(stream) // Answer the call with an A/V stream.
-        })
+
+      call.answer(myVideoTag.current?.srcObject) // Answer the call with an A/V stream.
+
       call.on('stream', function (remoteStream) {
         setPeers(peers => {
           if (!peers.find(item => item.peerId === call.peer)) {
@@ -322,11 +304,19 @@ const CallModal = () => {
 
   const handleCloseMedia = () => {
     if (myVideoTag.current) {
+      console.log({ video: myVideoTag.current })
       myVideoTag.current.srcObject?.getTracks().forEach(track => {
-        track.stop()
+        console.log({ track })
+        track?.stop()
       })
     }
   }
+
+  useEffect(() => {
+    return () => {
+      handleCloseMedia()
+    }
+  }, [])
 
   return (
     <div className=' fixed top-0 bottom-0 left-0 right-0 z-[99] bg-[#00000069] flex justify-center items-center text-gray-200'>

@@ -18,6 +18,7 @@ import { defaultCoverImage } from '../Constants'
 import { globalTypes } from '../Reduxs/Types/globalType'
 
 const ProfilePage = () => {
+  const [load, setLoad] = useState(false)
   const dispatch = useDispatch()
   const { id } = useParams()
   const { user: me } = useSelector(state => state.auth)
@@ -91,11 +92,15 @@ const ProfilePage = () => {
   console.log({ requests, myRequest })
   useEffect(() => {
     if (id) {
+      setLoad(true)
       getApi('/posts/user/' + id)
         .then(({ data: { posts } }) => {
+          setLoad(false)
           dispatch({ type: postTypes.GET_HOME_POST_SUCCESS, payload: posts })
         })
-        .catch(err => {})
+        .catch(err => {
+          setLoad(false)
+        })
       getApi('/users/' + id + '/files')
         .then(({ data: { files } }) => {
           setFiles(files)
@@ -115,7 +120,11 @@ const ProfilePage = () => {
   return (
     <div>
       <Header />
-      {loading && <Facebook />}
+      {loading && (
+        <div className='mt-[60px] p-10'>
+          <Facebook />
+        </div>
+      )}
       {!loading && userInfo && (
         <div className='min-h-screen bg-[#fcf8f8]  '>
           <div className='w-full h-[120px] md:h-[350px] bg-[#e4d8d8] relative'>
@@ -151,6 +160,7 @@ const ProfilePage = () => {
           </div>
           {userInfo && (
             <Intro
+              load={load}
               friends={friends}
               userInfo={userInfo}
               own={id === me.id.toString()}

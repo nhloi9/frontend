@@ -5,6 +5,7 @@ import {onlineTypes} from '../Types/onlineType';
 import {callTypes} from '../Types/callType';
 import toast from 'react-hot-toast';
 import {postTypes} from '../Types/postType';
+import {defaulAvatar} from '../../Constants';
 
 function spawnNotification(body, icon, title, url) {
 	const notification = new Notification(title, {body, icon});
@@ -122,7 +123,7 @@ export const socketMiddleware = (socket) => (params) => (next) => (action) => {
 								? notify.content.slice(0, 20) + '...'
 								: notify.content
 							: '',
-						notify?.sender?.avatar?.url ?? '',
+						notify?.sender?.avatar?.url ?? defaulAvatar,
 						(notify.sender?.firstname ?? '') +
 							' ' +
 							(notify.sender?.lastname ?? '') +
@@ -182,7 +183,7 @@ export const socketMiddleware = (socket) => (params) => (next) => (action) => {
 			});
 
 			socket.on('call', (payload) => {
-				if (true) {
+				if (!getState().call) {
 					dispatch({
 						type: callTypes.CALL,
 						payload: payload,
@@ -192,7 +193,7 @@ export const socketMiddleware = (socket) => (params) => (next) => (action) => {
 
 			socket.on('meBusy', () => {
 				dispatch({type: callTypes.CALL, payload: null});
-				toast.error('you are on another call');
+				toast.error('you are on  call');
 			});
 
 			socket.on('otherOffline', () => {
@@ -203,6 +204,11 @@ export const socketMiddleware = (socket) => (params) => (next) => (action) => {
 			socket.on('otherBusy', () => {
 				dispatch({type: callTypes.CALL, payload: null});
 				toast.error('All members are busy');
+			});
+
+			socket.on('roomFull', () => {
+				dispatch({type: callTypes.CALL, payload: null});
+				toast.error('Room was full');
 			});
 
 			socket.on('endCall', (conversationId) => {

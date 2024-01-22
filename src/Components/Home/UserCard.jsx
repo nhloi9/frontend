@@ -10,7 +10,8 @@ const UserCard = ({ userInfo, text, size }) => {
         size={size === 'sm' ? 'default' : 60}
       />
       <div className='flex flex-col justify-center'>
-        <h1>{userInfo?.lastname + ' ' + userInfo?.firstname}</h1>
+        <h1>{userInfo?.firstname + ' ' + userInfo?.lastname}</h1>
+
         <p>{text}</p>
       </div>
     </div>

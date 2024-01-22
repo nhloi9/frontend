@@ -20,7 +20,8 @@ import {
   Select,
   Tooltip,
   DatePicker,
-  Popconfirm
+  Popconfirm,
+  Spin
 } from 'antd'
 
 import { CiSearch } from 'react-icons/ci'
@@ -52,6 +53,8 @@ const GroupDetail = () => {
   const { posts } = useSelector(state => state.post)
   const dispatch = useDispatch()
   const [files, setFiles] = useState([])
+
+  const [load, setLoad] = useState(true)
 
   const navigate = useNavigate()
   const [groupData, setGroupData] = useState(null)
@@ -241,9 +244,12 @@ const GroupDetail = () => {
       dispatch({ type: postTypes.GET_HOME_POST_SUCCESS, payload: [] })
       getApi('/posts/group/' + id)
         .then(({ data: { posts } }) => {
+          setLoad(false)
           dispatch({ type: postTypes.GET_HOME_POST_SUCCESS, payload: posts })
         })
-        .catch(err => {})
+        .catch(err => {
+          setLoad(false)
+        })
     }
     return () =>
       dispatch({ type: postTypes.GET_HOME_POST_SUCCESS, payload: [] })
@@ -701,6 +707,11 @@ const GroupDetail = () => {
                     </div>
 
                     <div className='w-full py-4'>
+                      {load && (
+                        <div className='w-min mx-auto mt-[100px]'>
+                          <Spin />
+                        </div>
+                      )}
                       <Posts type={'detailGroup'} posts={posts} />
                     </div>
 

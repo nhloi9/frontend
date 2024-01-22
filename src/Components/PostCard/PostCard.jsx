@@ -20,9 +20,10 @@ const PostCard = ({ post, type }) => {
 
   return (
     <div
-      className={`w-full !bg-white mt-3   shadow-[0_0_1px] hover:shadow-[0_0_2px_gray]  rounded-md  mx-auto ${
-        post?.accepted === false && 'pointer-events-none opacity-40'
-      }`}
+      className={`w-full !bg-white mt-3   border border-gray-200 
+        rounded-md  mx-auto ${
+          post?.accepted === false && 'pointer-events-none opacity-40'
+        }`}
     >
       <CardHeader post={post} type={type} />
       <CardBody post={post} />

@@ -10,7 +10,7 @@ const GroupsJoined = () => {
   const navigate = useNavigate()
   const { requests } = useSelector(state => state.group)
   return (
-    <div className='pt-[60px] bg-gray-200 min-h-[100vh]  flex relative'>
+    <div className='pt-[60px] bg-gray-100 min-h-[105vh]  flex relative'>
       <LeftSide active={3} />
       <div className='w-[calc(100%-35px)]'>
         <div className='w-[80%] mx-auto my-5 '>

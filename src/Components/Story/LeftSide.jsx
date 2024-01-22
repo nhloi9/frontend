@@ -5,6 +5,7 @@ import { FaPlus } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { GrFormPreviousLink } from 'react-icons/gr'
+import { defaulAvatar } from '../../Constants'
 
 const LeftSide = ({ stories, current, setCurrent, type }) => {
   const { user } = useSelector(state => state.auth)
@@ -42,7 +43,7 @@ const LeftSide = ({ stories, current, setCurrent, type }) => {
                 <div className='rounded-full border-[3px] border-gray-100 shadow'>
                   <Avatar
                     size={'large'}
-                    src={story?.user?.avatar?.url}
+                    src={story?.user?.avatar?.url || defaulAvatar}
                     className='shadow'
                   />
                 </div>
@@ -89,7 +90,7 @@ const LeftSide = ({ stories, current, setCurrent, type }) => {
                     <div className='rounded-full border-[3px] border-gray-100 shadow'>
                       <Avatar
                         size={'large'}
-                        src={story?.user?.avatar?.url}
+                        src={story?.user?.avatar?.url || defaulAvatar}
                         className='shadow'
                       />
                     </div>
@@ -124,7 +125,7 @@ const LeftSide = ({ stories, current, setCurrent, type }) => {
                       <div className='rounded-full border-[3px] border-gray-100 shadow'>
                         <Avatar
                           size={'large'}
-                          src={story?.user?.avatar?.url}
+                          src={story?.user?.avatar?.url || defaulAvatar}
                           className='shadow'
                         />
                       </div>
