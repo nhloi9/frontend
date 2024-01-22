@@ -17,7 +17,6 @@ import { callTypes } from '../../Reduxs/Types/callType'
 import { IoMic } from 'react-icons/io5'
 import { IoIosMicOff } from 'react-icons/io'
 import { FaVideo, FaVideoSlash } from 'react-icons/fa6'
-import { getApi } from '../../network/api'
 
 const CallModal = () => {
   const [changeData, setChangeData] = useState({})
@@ -271,25 +270,6 @@ const CallModal = () => {
       video: false,
       audio
     })
-    // getMedia({ audio, video: false }).then(stream => {
-    //   setVideo(false)
-    //   if (myVideoTag?.current) {
-    //     const video = myVideoTag.current
-    //     video.srcObject = stream
-    //     video.onloadedmetadata = function (e) {
-    //       video.play()
-    //     }
-    //   }
-    //   callsRef.current.forEach(call =>
-    //     call.peerConnection.getSenders().forEach((sender, index) => {
-    //       console.log({ sender })
-    //       if (sender?.track?.kind === 'video') {
-    //         sender.replaceTrack(black())
-    //       }
-    //       console.log(sender?.track?.kind, index)
-    //     })
-    //   )
-    // })
   }
 
   const handleOnCammera = (roomId, socketId) => {
@@ -451,7 +431,7 @@ const CallModal = () => {
           <div className='absolute  rounded-md bottom-4 right-4 w-[300px] h-[200px] '>
             <div className='w-full h-full relative'>
               <video
-                muted={audio === false}
+                muted={true}
                 ref={myVideoTag}
                 className=' rounded-md w-full h-full object-cover'
                 autoPlay={true}

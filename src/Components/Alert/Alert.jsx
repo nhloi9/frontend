@@ -22,7 +22,7 @@ const Alert = () => {
   }, [alert, distpatch])
 
   return (
-    <div className='fixed top-0 w-full z-[9999999999999999999999999]'>
+    <div className='fixed top-0 w-full z-[99]'>
       <audio controls id='notification_sound' className='hidden'>
         <source
           src={require('../../assets/audio/mixkit-achievement-bell-600.wav')}

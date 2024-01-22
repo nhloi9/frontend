@@ -8,17 +8,15 @@ import { PiShareFatLight } from 'react-icons/pi'
 
 import { reacts } from '../../Constants'
 import {
-  likePost,
   reactPost,
   removeReactPost,
   savePostsAction,
   sharePostAction,
   unsavePostsAction
 } from '../../Reduxs/Actions/postAction'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ShowReacts from './ShowReacts'
 import { MdOutlinePublic } from 'react-icons/md'
-import { FaLock } from 'react-icons/fa'
 import { CiLock } from 'react-icons/ci'
 import moment from 'moment'
 
@@ -142,37 +140,39 @@ const CardFooter = ({ post, setIsModalOpen }) => {
           <p className='text-sm'>{post?.comments?.length ?? 0} comments</p>
         </div>
         <div className='flex flex-col items-center'>
-          <Dropdown
-            trigger={'click'}
-            menu={{
-              items: [
-                {
-                  key: '1',
-                  label: (
-                    <div onClick={() => handleShare()}>
-                      <PiShareFatLight /> Share now (Friends)
-                    </div>
-                  )
-                },
-                {
-                  key: '2',
-                  label: (
-                    <div onClick={() => setIsOpenShareToGroup(true)}>
-                      <PiShareFatLight /> Share to a group
-                    </div>
-                  )
-                }
-              ]
-            }}
-          >
-            <Tooltip title='share'>
-              <BsSend
-                // onClick={() => setIsOpenShare(true)}
-                size={19}
-                className='cursor-pointer'
-              />
-            </Tooltip>
-          </Dropdown>
+          {post?.share !== null && (
+            <Dropdown
+              trigger={'click'}
+              menu={{
+                items: [
+                  {
+                    key: '1',
+                    label: (
+                      <div onClick={() => handleShare()}>
+                        <PiShareFatLight /> Share now (Friends)
+                      </div>
+                    )
+                  },
+                  {
+                    key: '2',
+                    label: (
+                      <div onClick={() => setIsOpenShareToGroup(true)}>
+                        <PiShareFatLight /> Share to a group
+                      </div>
+                    )
+                  }
+                ]
+              }}
+            >
+              <Tooltip title='share'>
+                <BsSend
+                  // onClick={() => setIsOpenShare(true)}
+                  size={19}
+                  className='cursor-pointer'
+                />
+              </Tooltip>
+            </Dropdown>
+          )}
           <Dropdown
             className='!max-h-[100px]'
             menu={{
@@ -183,7 +183,6 @@ const CardFooter = ({ post, setIsModalOpen }) => {
                     <div className='flex justify-between'>
                       {post.user?.firstname + ' ' + post.user?.lastname}{' '}
                       <span className=' text-gray-500'>
-                        {' '}
                         {post?.createdAt && moment(post.createdAt).fromNow()}
                       </span>
                     </div>
@@ -193,11 +192,6 @@ const CardFooter = ({ post, setIsModalOpen }) => {
             }}
           >
             <div className='flex flex-col items-center'>
-              {/* <a
-                href='m'
-                onClick={e => e.preventDefault()}
-                className='text-black no-underline hover:underline'
-              > */}
               {post?.shareId ? (
                 ''
               ) : (
