@@ -138,13 +138,22 @@ const CallModal = () => {
 
   //create peer object
   useEffect(() => {
-    const peer = new Peer(socket.socket.id, {
-      host: 'peerserver-7j9x.onrender.com',
-      // host: 'localhost',
-      port: 443,
-      path: '/myapp',
-      secure: true
-    })
+    const peer = new Peer(
+      socket.socket.id
+      //    {
+      //   host: 'peerserver-7j9x.onrender.com',
+      //   // host: 'localhost',
+      //   port: 443,
+      //   path: '/myapp',
+      //   secure: true,
+      //   config: {
+      //     iceServers: [
+      //       { url: 'stun:stun.l.google.com:19302' },
+      //       { url: 'turn:homeo@turn.bistri.com:80', credential: 'homeo' }
+      //     ]
+      //   }
+      // }
+    )
     console.log({ peer })
 
     peer.on('call', function (call) {
