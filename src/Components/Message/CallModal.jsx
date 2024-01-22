@@ -17,6 +17,7 @@ import { callTypes } from '../../Reduxs/Types/callType'
 import { IoMic } from 'react-icons/io5'
 import { IoIosMicOff } from 'react-icons/io'
 import { FaVideo, FaVideoSlash } from 'react-icons/fa6'
+import { getApi } from '../../network/api'
 
 const CallModal = () => {
   const [changeData, setChangeData] = useState({})
@@ -138,22 +139,40 @@ const CallModal = () => {
 
   //create peer object
   useEffect(() => {
-    const peer = new Peer(
-      socket.socket.id
-      //    {
-      //   host: 'peerserver-7j9x.onrender.com',
-      //   // host: 'localhost',
-      //   port: 443,
-      //   path: '/myapp',
-      //   secure: true,
-      //   config: {
-      //     iceServers: [
-      //       { url: 'stun:stun.l.google.com:19302' },
-      //       { url: 'turn:homeo@turn.bistri.com:80', credential: 'homeo' }
-      //     ]
-      //   }
-      // }
-    )
+    const peer = new Peer(socket.socket.id, {
+      host: 'peerserver-7j9x.onrender.com',
+      // host: 'localhost',
+      port: 443,
+      path: '/myapp',
+      secure: true,
+      config: {
+        iceServers: [
+          {
+            urls: 'stun:stun.relay.metered.ca:80'
+          },
+          {
+            urls: 'turn:standard.relay.metered.ca:80',
+            username: '21b7fc8d9951109a5c397a43',
+            credential: 'R86yh/ayGSI5+CEU'
+          },
+          {
+            urls: 'turn:standard.relay.metered.ca:80?transport=tcp',
+            username: '21b7fc8d9951109a5c397a43',
+            credential: 'R86yh/ayGSI5+CEU'
+          },
+          {
+            urls: 'turn:standard.relay.metered.ca:443',
+            username: '21b7fc8d9951109a5c397a43',
+            credential: 'R86yh/ayGSI5+CEU'
+          },
+          {
+            urls: 'turns:standard.relay.metered.ca:443?transport=tcp',
+            username: '21b7fc8d9951109a5c397a43',
+            credential: 'R86yh/ayGSI5+CEU'
+          }
+        ]
+      }
+    })
     console.log({ peer })
 
     peer.on('call', function (call) {

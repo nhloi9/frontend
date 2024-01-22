@@ -42,6 +42,7 @@ import SearchPage from './Pages/SearchPage';
 import DisCoverPage from './Pages/DisCoverPage';
 import {socket} from './socket';
 import HashtagPage from './Pages/HashtagPage';
+import {getApi} from './network/api';
 function App() {
 	const dispatch = useDispatch();
 	const {darkAlgorithm, defaultAlgorithm} = theme;
@@ -93,6 +94,12 @@ function App() {
 		}
 		return () => dispatch({type: 'socket/disconnect'});
 	}, [dispatch, user?.id, socketToken]);
+
+	// useEffect(() => {
+	// 	getApi(
+	// 		'https://horizon.metered.live/api/v1/turn/credential?secretKey=0ALrt0BldCrdr5asweIcf32Sl7bS6Wb7nskiT7GbXgxM88Gv'
+	// 	).then((response) => console.log({response}));
+	// }, []);
 
 	// useEffect(() => {
 
