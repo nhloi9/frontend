@@ -134,6 +134,7 @@ const RightSide = ({ id }) => {
       setConversation(cloneConversation)
       dispatch(addMessage(message))
       setInputMessage('')
+      setImages([])
     } catch (error) {}
   }
 
@@ -1142,17 +1143,19 @@ function MessageCard ({ message, user, children, isGroup }) {
               <LinkPreview data={preview} />
             </div>
           ) : (
-            <div className='w-[calc(100%-40px)]'>
-              <div className='w-min max-w-[60%] !bg-gray-300 rounded-[10px]  py-1 px-2 mx-1 flex  min-w-[30px]  overflow-hidden '>
-                {/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(
-                  message?.text
-                ) ? (
-                  <a href={message.text} target='_blank' rel='noreferrer'>
-                    {message.text}
-                  </a>
-                ) : (
-                  message.text
-                )}
+            <div className='w-[calc(100%-40px)] '>
+              <div className='flex'>
+                <div className=' max-w-[60%] !bg-gray-300 rounded-[10px]  py-1 px-2 mx-1 flex  min-w-[30px]  overflow-hidden '>
+                  {/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/.test(
+                    message?.text
+                  ) ? (
+                    <a href={message.text} target='_blank' rel='noreferrer'>
+                      {message.text}
+                    </a>
+                  ) : (
+                    <p>{message.text}</p>
+                  )}
+                </div>
               </div>
               {message?.files?.length > 0 && (
                 <div
