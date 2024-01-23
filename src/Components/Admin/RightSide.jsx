@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { deleteApi, getApi, postApi } from '../../network/api'
 import CardHeader from '../PostCard/CardHeader'
 import CardBody from '../PostCard/CardBody'
-import { Button } from 'antd'
+import { Button, Spin } from 'antd'
 import { useDispatch } from 'react-redux'
 import { globalTypes } from '../../Reduxs/Types/globalType'
 import Box from '@mui/material/Box'
@@ -29,6 +29,8 @@ import {
 import { Line } from 'react-chartjs-2'
 import { MdDelete } from 'react-icons/md'
 import { LuEye } from 'react-icons/lu'
+import toast from 'react-hot-toast'
+import { baseUrl } from '../../Constants'
 
 ChartJS.register(
   CategoryScale,
@@ -239,9 +241,7 @@ const columns = [
         <GridActionsCellItem
           icon={<LuEye />}
           label='Delete'
-          onClick={() =>
-            window.open('http://localhost:3000/profile/' + id, '_blank')
-          }
+          onClick={() => window.open(baseUrl + '/profile/' + id, '_blank')}
           color='inherit'
         />,
         <GridActionsCellItem
@@ -257,6 +257,7 @@ const columns = [
 
 const Users = () => {
   const dispatch = useDispatch()
+  const [load, setLoad] = useState(true)
 
   const [usersData, setUsersData] = useState([])
   const rows = usersData.map(item => {
@@ -265,29 +266,14 @@ const Users = () => {
   })
 
   useEffect(() => {
-    dispatch({
-      type: globalTypes.ALERT,
-      payload: {
-        loading: true
-      }
-    })
     getApi('/admins/all-users')
       .then(({ data: { users } }) => {
+        setLoad(false)
         setUsersData(users)
-        dispatch({
-          type: globalTypes.ALERT,
-          payload: {
-            loading: false
-          }
-        })
       })
       .catch(error => {
-        dispatch({
-          type: globalTypes.ALERT,
-          payload: {
-            error
-          }
-        })
+        setLoad(false)
+        toast.error(error)
       })
   }, [dispatch])
 
@@ -324,12 +310,18 @@ const Users = () => {
           getRowClassName={params => `super-app-theme--${params.row.id % 3}`}
         />
       </Box>
+      {load && (
+        <div className='w-min mx-auto mt-[100px]'>
+          <Spin />
+        </div>
+      )}
     </div>
   )
 }
 
 const Home = () => {
   const dispatch = useDispatch()
+  const [load, setLoad] = useState(true)
 
   const [statisticsData, setStatisticsData] = useState(null)
 
@@ -369,33 +361,23 @@ const Home = () => {
   }
 
   useEffect(() => {
-    dispatch({
-      type: globalTypes.ALERT,
-      payload: {
-        loading: true
-      }
-    })
     getApi('/statistics')
       .then(({ data: { statistics } }) => {
         setStatisticsData(statistics?.reverse())
-        dispatch({
-          type: globalTypes.ALERT,
-          payload: {
-            loading: false
-          }
-        })
+        setLoad(false)
       })
       .catch(error => {
-        dispatch({
-          type: globalTypes.ALERT,
-          payload: {
-            error
-          }
-        })
+        toast.error(error)
+        setLoad(false)
       })
   }, [dispatch])
   return (
     <div className='w-[calc(100%-35px)]'>
+      {load && (
+        <div className='w-min mx-auto mt-[100px]'>
+          <Spin />
+        </div>
+      )}
       {statisticsData && (
         <div className=''>
           <Line options={options} data={data} />
@@ -407,6 +389,7 @@ const Home = () => {
 }
 
 const Report = () => {
+  const [load, setLoad] = useState(true)
   const dispatch = useDispatch()
 
   const [reportedPosts, setRepostedPosts] = useState([])
@@ -468,8 +451,12 @@ const Report = () => {
     getApi('/posts/report')
       .then(({ data: { posts } }) => {
         setRepostedPosts(posts)
+        setLoad(false)
       })
-      .catch(err => {})
+      .catch(err => {
+        setLoad(false)
+        toast.error(err)
+      })
   }, [])
   return (
     <div className='w-[calc(100%-35px)]'>
@@ -477,7 +464,12 @@ const Report = () => {
         <h1 className='text-[20px]'>User-reported content </h1>
       </div>
       <div className='w-[70%] mx-auto my-5 '>
-        {reportedPosts.map(post => (
+        {load && (
+          <div className='w-min mx-auto mt-[100px]'>
+            <Spin />
+          </div>
+        )}
+        {reportedPosts?.map(post => (
           <ReportPost post={post} keepPost={keepPost} removePost={removePost} />
         ))}
       </div>

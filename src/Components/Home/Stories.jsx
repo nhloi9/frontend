@@ -20,25 +20,27 @@ const Stories = () => {
             onClick={() => navigate('/stories/create')}
           >
             <img
-              src={user?.avatar?.url ?? defaulAvatar}
+              src={user?.avatar?.url || defaulAvatar}
               alt=''
               className='w-full h-full object-cover rounded-lg'
             />
             <div className='absolute w-full flex justify-center bottom-[15%] translate-y-4 z-30'>
-              <AiFillPlusCircle
-                size={30}
-                color='blue'
-                className=' !text-[30px]'
-              />
+              <div className='w-min h-min rounded-full bg-white'>
+                <AiFillPlusCircle
+                  size={30}
+                  color='blue'
+                  className=' !text-[30px]'
+                />
+              </div>
             </div>
             <div className='absolute  bottom-0 h-[15%] rounded-b-lg left-0 w-full bg-gray-50  px-3 flex justify-end  flex-col items-center py-1 '>
               <h1 className='text-gray-700 font-[600] text-[14px]'>
                 Create story
               </h1>
             </div>
-            <div className='absolute top-3 left-0 w-full  px-3 '>
+            {/* <div className='absolute top-3 left-0 w-full  px-3 '>
               <Avatar className='border-[3px] border-blue-500' />
-            </div>
+            </div> */}
           </div>
           {stories.map((story, index) => (
             <div

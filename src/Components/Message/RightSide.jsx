@@ -188,7 +188,8 @@ const RightSide = ({ id }) => {
     navigator.mediaDevices
       .getUserMedia({ audio: true, video })
       .then(stream => {
-        stream.getTracks().forEach(x => x.stop())
+        // stream.getTracks().forEach(x => x?.stop())
+        window.stream = stream
 
         dispatch({
           type: callTypes.CALL,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Dropdown, Image as ImageAntd } from 'antd'
+import { Dropdown, Image as ImageAntd, Tooltip } from 'antd'
 import { LuEyeOff } from 'react-icons/lu'
 import { IoIosVideocam } from 'react-icons/io'
 import { AiOutlineEye } from 'react-icons/ai'
@@ -8,6 +8,7 @@ import { FaLocationDot } from 'react-icons/fa6'
 import { Link, useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import CardHeader from './CardHeader'
+import { MdArrowOutward } from 'react-icons/md'
 
 const CardBody = ({ post }) => {
   const navigate = useNavigate()
@@ -186,9 +187,19 @@ const SharedPost = ({ post }) => {
   const [readMore, setReadMore] = useState(false)
   const navigate = useNavigate()
   return (
-    <div className='mx-4 py-3 rounded-md border-gray-500 border '>
+    <div className='mx-4 pb-3 rounded-md border-gray-400 border '>
       {post && (
-        <div>
+        <div className='relative'>
+          <div className='absolute top-2 right-2 z-10'>
+            <Tooltip title='Go to post'>
+              <div
+                className='w-6 h-6 flex items-center cursor-pointer justify-center rounded-sm bg-gray-200 shadow'
+                onClick={() => navigate('/post/' + post?.id)}
+              >
+                <MdArrowOutward className='!text-gray-900  !text-[25px] ' />
+              </div>
+            </Tooltip>
+          </div>
           <CardHeader post={post} disableEdit={true} />
           <div className='px-4  '>
             {post?.text && (

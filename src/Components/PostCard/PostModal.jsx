@@ -21,8 +21,8 @@ const PostModal = ({ post, isModalOpen, setIsModalOpen }) => {
     <>
       <Modal
         destroyOnClose={true}
-        width={1000}
         open={isModalOpen}
+        className='!w-[80vw] !max-w-[700px]'
         onCancel={() => {
           setIsModalOpen(false)
         }}

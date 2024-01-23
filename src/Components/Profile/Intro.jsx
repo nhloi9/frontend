@@ -247,7 +247,13 @@ const Intro = ({ userInfo, own, files, friends, load }) => {
                 <Spin />
               </div>
             )}
-            <Posts posts={posts} />
+            <Posts
+              posts={posts?.filter(
+                post =>
+                  post?.userId === userInfo?.id ||
+                  post?.tags?.find(tag => tag?.id === userInfo?.id)
+              )}
+            />
           </div>
         </div>
       )}
@@ -362,12 +368,12 @@ const Intro = ({ userInfo, own, files, friends, load }) => {
               <div className='border w-full lg:h-[115px] h-[90px] rounded-md flex px-4 items-center gap-4'>
                 <img
                   src={friend?.avatar?.url ?? defaulAvatar}
-                  className='lg:w-20 lg:h-20 w-16 h-16 object-cover rounded-md cursor-pointer'
+                  className='lg:w-20 lg:h-20 w-16 h-16 object-cover border  border-gray-200 rounded-md cursor-pointer'
                   alt=''
                   onClick={() => navigate('/profile/' + friend?.id)}
                 />
                 <h1
-                  className='cursor-pointer'
+                  className='cursor-pointer hover:underline'
                   onClick={() => navigate('/profile/' + friend?.id)}
                 >
                   {friend?.firstname + ' ' + friend?.lastname}

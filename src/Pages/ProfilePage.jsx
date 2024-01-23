@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { Facebook } from 'react-content-loader'
+import ContentLoader from 'react-content-loader'
 import { FaRegImage } from 'react-icons/fa'
 
 import { getApi } from '../network/api'
@@ -12,7 +12,6 @@ import { updateCoverImageAction } from '../Reduxs/Actions/authAction'
 import toast from 'react-hot-toast'
 import { upload } from '../utils/imageUpload'
 import { postTypes } from '../Reduxs/Types/postType'
-import { storyTypes } from '../Reduxs/Types/storyType'
 import { getProfileStoriesAction } from '../Reduxs/Actions/storyAction'
 import { defaultCoverImage } from '../Constants'
 import { globalTypes } from '../Reduxs/Types/globalType'
@@ -66,12 +65,10 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (id !== me.id.toString()) {
-      setLoading(true)
       getApi('/users/info/' + id)
         .then(data => {
           setUserInfo(data.data.user)
           setFriends(data?.data?.user?.friends ?? [])
-          setLoading(false)
         })
         .catch(err => {})
     } else {
@@ -120,12 +117,30 @@ const ProfilePage = () => {
   return (
     <div>
       <Header />
-      {loading && (
-        <div className='mt-[60px] p-10'>
-          <Facebook />
+      {!userInfo && (
+        <div className='flex justify-center pt-[20px]'>
+          <ContentLoader
+            speed={2}
+            width={600}
+            height={800}
+            viewBox='0 0 600 800'
+            backgroundColor='#ecdfdf'
+            foregroundColor='#ecebeb'
+          >
+            <rect x='61' y='235' rx='3' ry='3' width='170' height='124' />
+            <rect x='57' y='205' rx='3' ry='3' width='523' height='12' />
+            <rect x='490' y='85' rx='3' ry='3' width='75' height='25' />
+            <circle cx='88' cy='129' r='47' />
+            <rect x='165' y='96' rx='0' ry='0' width='121' height='11' />
+            <rect x='170' y='126' rx='0' ry='0' width='119' height='15' />
+            <rect x='171' y='154' rx='0' ry='0' width='117' height='15' />
+            <rect x='277' y='231' rx='0' ry='0' width='295' height='214' />
+            <rect x='427' y='463' rx='0' ry='0' width='28' height='2' />
+            <rect x='280' y='473' rx='0' ry='0' width='296' height='216' />
+          </ContentLoader>
         </div>
       )}
-      {!loading && userInfo && (
+      {userInfo && (
         <div className='min-h-screen bg-[#fcf8f8]  '>
           <div className='w-full h-[120px] md:h-[350px] bg-[#e4d8d8] relative'>
             {
@@ -137,7 +152,7 @@ const ProfilePage = () => {
                     ? window.URL.createObjectURL(coverImage)
                     : defaultCoverImage
                 }
-                className='block w-full h-full object-cover'
+                className='block w-full h-full object-cover shadow-sm'
                 alt={userInfo.fullname}
               />
             }

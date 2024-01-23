@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import CardHeader from './CardHeader'
 import CardBody from './CardBody'
 import CardFooter from './CardFooter'
 import PostModal from './PostModal'
-import { useDispatch } from 'react-redux'
-import { createCommentAction } from '../../Reduxs/Actions/postAction'
+import { useSelector } from 'react-redux'
 // import CardBody from './CardBody'
 // import CardFooter from './CardFooter'
 // import InputComment from './InputComment.jsx'
@@ -12,17 +11,38 @@ import { createCommentAction } from '../../Reduxs/Actions/postAction'
 
 const PostCard = ({ post, type }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const { requests } = useSelector(state => state.friend)
+  const { user } = useSelector(state => state.auth)
+
+  const friends = useMemo(() => {
+    const acceptedRequests = requests?.filter(req => req?.status === 'accepted')
+    return acceptedRequests.map(req => {
+      return req?.senderId === user?.id ? req.receiver : req.sender
+    })
+  }, [requests, user?.id])
+
+  const checkPermissView = useMemo(() => {
+    if (post?.userId === user?.id) return true
+    if (friends?.find(friend => friend.id === post?.userId)) {
+      if (post?.privacy !== 'private') return true
+    } else if (post?.privacy === 'public') return true
+
+    return false
+  }, [post?.privacy, post?.userId, user?.id, friends])
+
   useEffect(() => {
-    if (post?.accepted === false) {
+    if (post?.accepted === false || checkPermissView === false) {
       setIsModalOpen(false)
     }
-  }, [post?.accepted])
+  }, [post?.accepted, post?.privacy, checkPermissView])
 
   return (
     <div
       className={`w-full !bg-white mt-3   border border-gray-200 
         rounded-md  mx-auto ${
-          post?.accepted === false && 'pointer-events-none opacity-40'
+          (post?.accepted === false || checkPermissView === false) &&
+          'pointer-events-none opacity-40'
         }`}
     >
       <CardHeader post={post} type={type} />

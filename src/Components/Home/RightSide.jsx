@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { Avatar, Spin } from 'antd'
+import { Spin } from 'antd'
 import { defaulAvatar } from '../../Constants'
 import { getApi, postApi } from '../../network/api'
 import { TfiReload } from 'react-icons/tfi'
 import UserCard from './UserCard'
 import AddFriend from '../Friend/AddFriend'
+import Avatar from './Avatar'
 
 const RightSide = () => {
   const navigate = useNavigate()
@@ -51,7 +52,7 @@ const RightSide = () => {
       <div className='flex gap-1 flex-col  mt-1'>
         {onlineFriends?.map(friend => (
           <div
-            className='w-full h-[56px] gap-1  flex items-center hover:bg-gray-200 cursor-pointer rounded-md'
+            className='w-full h-[56px] gap-1 px-1  flex items-center hover:bg-gray-200 cursor-pointer rounded-md'
             onClick={() => {
               postApi('/conversations', {
                 members: [friend.id]

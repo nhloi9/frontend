@@ -222,6 +222,9 @@ export const socketMiddleware = (socket) => (params) => (next) => (action) => {
 				dispatch({type: postTypes.UPDATE_POST, payload: post});
 			});
 
+			socket.on('deletePost', (postId) => {
+				dispatch({type: postTypes.DELETE_POST, payload: postId});
+			});
 			//receive message
 			// socket.on('message', (message) => {
 			// 	//update chat

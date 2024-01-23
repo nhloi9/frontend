@@ -62,6 +62,7 @@ const CallModal = () => {
   function createStream () {
     getMedia({ video: true, audio: true })
       .then(stream => {
+        window.stream = stream
         if (myVideoTag?.current) {
           const video = myVideoTag.current
           video.srcObject = stream
@@ -115,24 +116,25 @@ const CallModal = () => {
   // get mediastream if is author
   useEffect(() => {
     if (callData?.author === true) {
-      getMedia({
-        audio: true,
-        video: callData?.type === 'video' ?? false
-      })
-        .then(stream => {
-          if (myVideoTag?.current) {
-            const video = myVideoTag.current
-            video.srcObject = stream
-            video.onloadedmetadata = function (e) {
-              video.play()
-            }
-          }
-        })
-        .catch(err => {
-          toast.error(
-            "You need to give the app permission to access the device's audio or camera"
-          )
-        })
+      // getMedia({
+      //   audio: true,
+      //   video: callData?.type === 'video' ?? false
+      // })
+      //   .then(stream => {
+      // window.stream = stream
+      if (myVideoTag?.current) {
+        const video = myVideoTag.current
+        video.srcObject = window.stream
+        video.onloadedmetadata = function (e) {
+          video.play()
+        }
+      }
+      // })
+      // .catch(err => {
+      //   toast.error(
+      //     "You need to give the app permission to access the device's audio or camera"
+      //   )
+      // })
     }
   }, [callData?.author, callData?.type])
 
@@ -172,7 +174,6 @@ const CallModal = () => {
         ]
       }
     })
-    console.log({ peer })
 
     peer.on('call', function (call) {
       callsRef.current.push(call)
@@ -311,12 +312,19 @@ const CallModal = () => {
   console.log({ changeData })
 
   const handleCloseMedia = () => {
-    if (myVideoTag.current) {
-      console.log({ video: myVideoTag.current })
-      myVideoTag.current.srcObject?.getTracks().forEach(track => {
-        console.log({ track })
+    // if (myVideoTag.current) {
+    //   console.log({ video: myVideoTag.current })
+    // myVideoTag.current.srcObject?.getTracks().forEach(track => {
+    //   console.log({ track })
+    //   track?.stop()
+    // })
+    // }
+    if (window.stream) {
+      window.stream?.getTracks()?.forEach(track => {
         track?.stop()
+        // console.log({ track })
       })
+      window.stream = undefined
     }
   }
 

@@ -18,7 +18,7 @@ import { postApi } from '../../network/api'
 import Avatar from '../Home/Avatar'
 import { baseUrl, defaulAvatar } from '../../Constants'
 import { globalTypes } from '../../Reduxs/Types/globalType'
-import { deletePost } from '../../Reduxs/Actions/postAction'
+import { deletePost, removeTagAction } from '../../Reduxs/Actions/postAction'
 import toast from 'react-hot-toast'
 
 const CardHeader = ({ post, type, disableEdit }) => {
@@ -33,6 +33,10 @@ const CardHeader = ({ post, type, disableEdit }) => {
 
   const handleDeletePost = () => {
     dispatch(deletePost(post?.id))
+  }
+
+  const handleRemoveTag = () => {
+    dispatch(removeTagAction(post?.id))
   }
 
   const handleCopy = () => {
@@ -197,6 +201,22 @@ const CardHeader = ({ post, type, disableEdit }) => {
                               className='flex items-center'
                             >
                               <CiEdit size='18px' /> &nbsp;Edit Post
+                            </div>
+                          ),
+                          key: '0'
+                        }
+                      ]
+                    : []),
+                  ...(user?.id !== post?.userId &&
+                  post?.tags?.find(item => item?.id === user?.id)
+                    ? [
+                        {
+                          label: (
+                            <div
+                              onClick={handleRemoveTag}
+                              className='flex items-center'
+                            >
+                              <CiEdit size='18px' /> &nbsp;Remove tag
                             </div>
                           ),
                           key: '0'

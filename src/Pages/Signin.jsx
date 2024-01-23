@@ -5,6 +5,7 @@ import { MdArrowBackIosNew } from 'react-icons/md'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { siginAction } from '../Reduxs/Actions/authAction'
+import { backendUrl } from '../Constants'
 
 const Signin = () => {
   const navigate = useNavigate()
@@ -47,7 +48,7 @@ const Signin = () => {
             <div
               className='rounded-3xl h-12  border-gray-600  dark:border-gray-50 border-[2px] cursor-pointer flex items-center'
               onClick={() => {
-                window.location.href = 'http://localhost:3333/users/google/url'
+                window.location.href = backendUrl + '/users/google/url'
               }}
             >
               <img

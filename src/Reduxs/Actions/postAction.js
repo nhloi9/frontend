@@ -8,6 +8,7 @@ import {deleteApi, getApi, postApi, putApi} from '../../network/api';
 import {postTypes} from '../Types/postType';
 import {reacts} from '../../Constants';
 import toast from 'react-hot-toast';
+import {socket} from '../../socket';
 
 export const createPostAction =
 	({content, photos, privacy, sentisment, location, hashtags, tags, groupId}) =>
@@ -194,7 +195,7 @@ export const updatePostAction =
 					success:
 						post?.accepted === false
 							? 'Your post is waiting for approval by the administrator'
-							: 'You have successfully created the post',
+							: 'You have successfully updated the post',
 				},
 			});
 			// const msg = {
@@ -493,6 +494,27 @@ export const deletePost = (postId) => async (dispatch, getState) => {
 	try {
 		await deleteApi('/posts/' + postId);
 		dispatch({type: postTypes.DELETE_POST, payload: postId});
+		socket.emit('deletePost', postId);
+	} catch (error) {
+		toast.error(error);
+	}
+};
+
+export const removeTagAction = (postId) => async (dispatch, getState) => {
+	try {
+		await deleteApi('/posts/' + postId + '/tag');
+
+		const {user} = getState().auth;
+		const post = structuredClone(
+			getState().post?.posts.find((item) => item.id === postId)
+		);
+		if (post) {
+			post.tags = post.tags.filter((tag) => tag?.id !== user?.id);
+			dispatch({
+				type: postTypes.POST,
+				payload: post,
+			});
+		}
 	} catch (error) {
 		toast.error(error);
 	}
