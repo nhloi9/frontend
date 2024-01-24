@@ -13,10 +13,6 @@ const LeftSide = ({ active }) => {
     <div className='flex flex-col sticky top-[60px] w-[350px]  bg-white h-[calc(100vh-60px)] shadow-lg border-r border-gray-300 p-3 group-left-side'>
       <div className='border-b border-gray-300'>
         <h1 className='font-[700] text-[24px]'>Groups</h1>
-        <input
-          className='block w-full mt-3 mb-3 px-4 py-2 bg-gray-200 rounded-2xl !border-none focus:outline-none'
-          placeholder='🔍 Search by name'
-        ></input>
       </div>
       <div className='h-full overflow-hidden hover:overflow-y-scroll scroll-min pt-2'>
         <div>
