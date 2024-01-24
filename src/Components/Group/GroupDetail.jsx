@@ -48,6 +48,7 @@ import { filterFriends } from '../../utils/other'
 import dayjs from 'dayjs'
 import { ar, el } from 'date-fns/locale'
 import ContentLoader from 'react-content-loader'
+import { upload } from '../../utils/imageUpload'
 const { RangePicker } = DatePicker
 
 const GroupDetail = () => {
@@ -236,12 +237,33 @@ const GroupDetail = () => {
       .catch(error => toast.error(error))
   }
 
-  const handleChangeGroupImage = async () => {
+  const handleChangeGroupImage = async e => {
     try {
-      if (groupData?.adminId === user?.id) {
-        await putApi('/groups/' + groupData?.id + '/image')
+      const avatar = e.target.files[0]
+      if (avatar) {
+        dispatch({
+          type: globalTypes.ALERT,
+          payload: { loading: true }
+        })
+        const images = await upload([avatar])
+        await putApi('/groups/' + groupData?.id + '/image', {
+          name: images[0]?.name,
+          url: images[0]?.url
+        })
+        setGroupData(pre => ({ ...pre, image: images[0] }))
+
+        dispatch({
+          type: globalTypes.ALERT,
+          payload: { loading: false }
+        })
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log({ error })
+      dispatch({
+        type: globalTypes.ALERT,
+        payload: { loading: false }
+      })
+    }
   }
 
   const myRequest = useMemo(() => {
@@ -471,16 +493,15 @@ const GroupDetail = () => {
                   className={` w-full h-[240px] object-cover block ${
                     groupData?.adminId === user?.id && 'cursor-pointer'
                   }`}
-                  onClick={handleChangeGroupImage}
-                />
-                <input
-                  onChange={handleChangeGroupImage}
-                  accept='image/png, image/gif, image/jpeg'
-                  type='file'
-                  id='change-group-image'
-                  className='hidden'
                 />
               </label>
+              <input
+                onChange={handleChangeGroupImage}
+                accept='image/png, image/gif, image/jpeg'
+                type='file'
+                id='change-group-image'
+                className='hidden'
+              />
               <div className='absolute  w-[calc(100%-20px)] min-h-[150px] -bottom-[50px] right-2 bg-white rounded-md p-3 pt-7 '>
                 <div className='flex flex-col gap-1'>
                   <p className='text-[28px] font-[700]'>{groupData?.name}</p>

@@ -193,68 +193,6 @@ const RightSide = () => {
   )
 }
 
-const columns = [
-  {
-    field: 'id',
-    headerName: 'ID',
-    width: 90
-  },
-  {
-    field: 'firstname',
-    headerName: 'First name',
-    width: 150,
-    headerClassName: 'super-app-theme--header'
-    // editable: true
-  },
-  {
-    headerClassName: 'super-app-theme--header',
-    field: 'lastname',
-    headerName: 'Last name',
-    width: 150
-    // editable: true
-  },
-  {
-    headerClassName: 'super-app-theme--header',
-    field: 'email',
-    headerName: 'Email address',
-
-    width: 250,
-    editable: false
-  },
-
-  {
-    headerClassName: 'super-app-theme--header',
-    field: 'createdAt',
-    headerName: 'Date Created',
-    type: 'date',
-    width: 140,
-    editable: false
-  },
-  {
-    field: 'actions',
-    type: 'actions',
-    headerName: 'Actions',
-    width: 100,
-    cellClassName: 'actions',
-    getActions: ({ id }) => {
-      return [
-        <GridActionsCellItem
-          icon={<LuEye />}
-          label='Delete'
-          onClick={() => window.open(baseUrl + '/profile/' + id, '_blank')}
-          color='inherit'
-        />,
-        <GridActionsCellItem
-          icon={<MdDelete />}
-          label='Delete'
-          // onClick={handleDeleteClick(id)}
-          color='inherit'
-        />
-      ]
-    }
-  }
-]
-
 const Users = () => {
   const dispatch = useDispatch()
   const [load, setLoad] = useState(true)
@@ -264,6 +202,76 @@ const Users = () => {
     const { id, lastname, firstname, createdAt, email } = item
     return { id, lastname, firstname, email, createdAt: new Date(createdAt) }
   })
+
+  const columns = [
+    {
+      field: 'id',
+      headerName: 'ID',
+      width: 90
+    },
+    {
+      field: 'firstname',
+      headerName: 'First name',
+      width: 150,
+      headerClassName: 'super-app-theme--header'
+      // editable: true
+    },
+    {
+      headerClassName: 'super-app-theme--header',
+      field: 'lastname',
+      headerName: 'Last name',
+      width: 150
+      // editable: true
+    },
+    {
+      headerClassName: 'super-app-theme--header',
+      field: 'email',
+      headerName: 'Email address',
+
+      width: 250,
+      editable: false
+    },
+
+    {
+      headerClassName: 'super-app-theme--header',
+      field: 'createdAt',
+      headerName: 'Date Created',
+      type: 'date',
+      width: 140,
+      editable: false
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      cellClassName: 'actions',
+      getActions: ({ id }) => {
+        return [
+          <GridActionsCellItem
+            icon={<LuEye />}
+            label='Delete'
+            onClick={() => window.open(baseUrl + '/profile/' + id, '_blank')}
+            color='inherit'
+          />,
+          <GridActionsCellItem
+            icon={<MdDelete />}
+            label='Delete'
+            onClick={handleDeleteClick(id)}
+            color='inherit'
+          />
+        ]
+      }
+    }
+  ]
+
+  const handleDeleteClick = userId => () => {
+    deleteApi('/users/' + userId)
+      .then(() => {
+        setUsersData(pre => pre.filter(item => item.id !== userId))
+      })
+      .catch(err => toast.error(err))
+  }
 
   useEffect(() => {
     getApi('/admins/all-users')

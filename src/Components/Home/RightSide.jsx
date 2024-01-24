@@ -8,6 +8,7 @@ import { TfiReload } from 'react-icons/tfi'
 import UserCard from './UserCard'
 import AddFriend from '../Friend/AddFriend'
 import Avatar from './Avatar'
+import _ from 'lodash'
 
 const RightSide = () => {
   const navigate = useNavigate()
@@ -29,16 +30,22 @@ const RightSide = () => {
   }, [friends, onlineUsers])
 
   useEffect(() => {
+    setLoading(true)
     getApi('/friend-requests/suggests')
-      .then(({ data: { suggests } }) => setSuggestUser(suggests?.slice(0, 5)))
-      .catch(err => {})
+      .then(({ data: { suggests } }) => {
+        setSuggestUser(suggests?.slice(0, 5))
+        setLoading(false)
+      })
+      .catch(err => {
+        setLoading(false)
+      })
   }, [])
 
   const getSuggestUser = () => {
     setLoading(true)
     getApi('/friend-requests/suggests')
       .then(({ data: { suggests } }) => {
-        setSuggestUser(suggests?.slice(0, 5))
+        setSuggestUser(_.sampleSize(suggests, 5))
         setLoading(false)
       })
       .catch(err => {
