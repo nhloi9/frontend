@@ -4,12 +4,28 @@ import CardBody from './CardBody'
 import CardFooter from './CardFooter'
 import PostModal from './PostModal'
 import { useSelector } from 'react-redux'
-// import CardBody from './CardBody'
-// import CardFooter from './CardFooter'
-// import InputComment from './InputComment.jsx'
-// import Comments from './Comments.jsx'
+import { postApi } from '../../network/api'
+
+function useIsVisible (ref) {
+  const [isIntersecting, setIntersecting] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) =>
+      setIntersecting(entry.isIntersecting)
+    )
+
+    observer.observe(ref.current)
+    return () => {
+      observer.disconnect()
+    }
+  }, [ref])
+
+  return isIntersecting
+}
 
 const PostCard = ({ post, type }) => {
+  const ref = useRef()
+  const isVisible = useIsVisible(ref)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   const { requests } = useSelector(state => state.friend)
@@ -37,8 +53,15 @@ const PostCard = ({ post, type }) => {
     }
   }, [post?.accepted, post?.privacy, checkPermissView])
 
+  useEffect(() => {
+    if (isVisible) {
+      postApi('/posts/' + post?.id + '/view').catch(err => {})
+    }
+  }, [isVisible, post?.id])
+
   return (
     <div
+      ref={ref}
       className={`w-full !bg-white mt-3   border border-gray-200 
         rounded-md  mx-auto ${
           (post?.accepted === false || checkPermissView === false) &&

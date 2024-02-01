@@ -65,7 +65,6 @@ const RightSide = ({ id }) => {
   }, [requests, user?.id])
 
   //to force rerender
-  const [key, setKey] = useState(0)
 
   const handleLoadMore = () => {
     if (cusor !== undefined) {
@@ -127,6 +126,7 @@ const RightSide = ({ id }) => {
       cloneConversation.members.forEach(member => {
         if (member.userId === user.id) {
           member.isSeen = true
+          member.active = true
         } else {
           member.isSeen = false
         }
@@ -142,12 +142,16 @@ const RightSide = ({ id }) => {
   useEffect(() => {
     const onMessage = ({ message }) => {
       try {
-        if (message.member.conversationId?.toString() === id) {
+        if (message?.member?.conversationId?.toString() === id) {
           setMessages(messages => [message, ...messages])
           const cloneConversation = structuredClone(conversation)
           cloneConversation.lastMessage = message
 
           cloneConversation.members?.forEach(item => {
+            if (item?.userId === message.member?.userId) {
+              item.active = true
+            }
+
             if (
               item?.userId === message.member?.userId ||
               item?.userId === user.id
@@ -155,6 +159,7 @@ const RightSide = ({ id }) => {
               item.isSeen = true
             } else item.isSeen = false
           })
+          setConversation(cloneConversation)
           socket.emit('seenConversation', { conversationId: id })
           dispatch(seenConversation(id, user.id, true))
         }
@@ -170,7 +175,7 @@ const RightSide = ({ id }) => {
       try {
         if (conversationId.toString() === id) {
           const cloneConversation = structuredClone(conversation)
-          console.log('dkdk')
+
           cloneConversation.members?.forEach(item => {
             if (item?.userId === userId) {
               item.isSeen = true
@@ -264,22 +269,10 @@ const RightSide = ({ id }) => {
     }
   }, [id, dispatch, user.id])
 
-  // useEffect(() => {
-  //   const peer = new Peer(socket.socket.id, {
-  //     // host: 'localhost',
-  //     // host: backendHost,
-  //     host: 'horizon-backend-baxc.onrender.com',
-  //     port: 1000,
-  //     path: '/',
-  //     secure: true
-  //   })
-  //   console.log({ peer })
-
-  //   return () => {
-  //     peer?.destroy()
-  //   }
-  // }, [])
-
+  const myMember = useMemo(
+    () => conversation?.members?.find(item => item?.userId === user?.id),
+    [conversation?.members, user?.id]
+  )
   return (
     <div className='h-screen w-[calc(100%-350px)] pt-[50px]   right-side-message'>
       {conversation ? (
@@ -329,40 +322,29 @@ const RightSide = ({ id }) => {
                   </p>
                 </div>
               </div>
-              <div className='flex gap-3 px-2'>
-                <FcVideoCall
-                  size={23}
-                  onClick={() => handleCall({ video: true })}
-                  className=' cursor-pointer !text-[#ff0d9e] '
-                />
-                <Tooltip placement='leftTop' title='Conversation information'>
-                  <FaCircleInfo
-                    onClick={() => setShowInfo(true)}
-                    size={20}
-                    color='blue'
-                    className='cursor-pointer'
-                  />
-                </Tooltip>
-              </div>
-              {/* <div className='flex gap-3 pr-3'>
-              <IoCall
-                color='green'
-                size={23}
-                className='cursor-pointer'
-                onClick={() => {
-                  handleCall({ video: false })
-                }}
-              />
-              <FcVideoCall
-                color='green'
-                size={23}
-                onClick={() => handleCall({ video: true })}
-                className=' cursor-pointer'
-              />
-            </div> */}
+              {
+                <div className='flex gap-3 px-2'>
+                  {conversation?.members?.every(
+                    member => member?.active === true
+                  ) && (
+                    <FcVideoCall
+                      size={23}
+                      onClick={() => handleCall({ video: true })}
+                      className=' cursor-pointer !text-[#ff0d9e] '
+                    />
+                  )}
+                  <Tooltip placement='leftTop' title='Conversation information'>
+                    <FaCircleInfo
+                      onClick={() => setShowInfo(true)}
+                      size={20}
+                      color='blue'
+                      className='cursor-pointer'
+                    />
+                  </Tooltip>
+                </div>
+              }
             </div>
 
-            {/* display list messages */}
             <div
               className='w-full py-2  h-full  overflow-y-auto   '
               id='scrollableDiv'
@@ -384,9 +366,6 @@ const RightSide = ({ id }) => {
                   }
                 >
                   <div className='flex justify-end pr-3 gap-1'>
-                    {/* {seen && (
-                <Avatar url={active.other.avatar} size={'micro-avatar'} />
-              )} */}
                     {conversation.members
                       .filter(
                         member =>
@@ -482,6 +461,23 @@ const RightSide = ({ id }) => {
               </InfiniteScroll>
             </div>
 
+            {conversation?.isGroup === false &&
+              conversation?.members?.every(item => {
+                if (item?.userId === user?.id) return item?.active === false
+                else return item?.active === true
+              }) && (
+                <div className='w-full text-center'>
+                  <p className='text-gray-400'>
+                    if you reply,{' '}
+                    {
+                      conversation?.members?.find(
+                        item => item?.userId !== user?.id
+                      )?.user?.firstname
+                    }{' '}
+                    will be able to call you and see information
+                  </p>
+                </div>
+              )}
             {images && images.length > 0 && (
               <div className=' px-[40px] w-[80%] max-h-[120px] overflow-y-scroll scroll-min flex min-h-[50px] flex-wrap gap-2'>
                 {images.map((image, i) => {

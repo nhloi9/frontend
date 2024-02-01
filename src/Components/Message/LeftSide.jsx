@@ -21,6 +21,8 @@ import { MultiSelect } from 'react-multi-select-component'
 import { addMessage } from '../../Reduxs/Actions/conversationAction '
 import toast from 'react-hot-toast'
 import { socket } from '../../socket'
+import { globalTypes } from '../../Reduxs/Types/globalType'
+import { postTypes } from '../../Reduxs/Types/postType'
 
 const LeftSide = ({ id }) => {
   const navigate = useNavigate()
@@ -42,12 +44,32 @@ const LeftSide = ({ id }) => {
   }, [requests, user?.id])
 
   const sortedConversations = useMemo(() => {
-    return [...conversations].sort((a, b) => {
-      return (
-        new Date(b.lastMessage?.createdAt).getTime() -
-        new Date(a?.lastMessage?.createdAt).getTime()
+    return [...conversations]
+      .filter(
+        conversation =>
+          conversation?.members?.find(item => item?.userId === user?.id)
+            ?.active === true
       )
-    })
+      .sort((a, b) => {
+        return (
+          new Date(b.lastMessage?.createdAt).getTime() -
+          new Date(a?.lastMessage?.createdAt).getTime()
+        )
+      })
+  }, [conversations, user?.id])
+  const sortedRequestConversations = useMemo(() => {
+    return [...conversations]
+      .filter(
+        conversation =>
+          conversation?.members?.find(item => item?.userId === user?.id)
+            ?.active === false
+      )
+      .sort((a, b) => {
+        return (
+          new Date(b.lastMessage?.createdAt).getTime() -
+          new Date(a?.lastMessage?.createdAt).getTime()
+        )
+      })
   }, [conversations])
 
   // const onlineList = useSelector(state => state.online)
@@ -81,12 +103,6 @@ const LeftSide = ({ id }) => {
   }
   console.log(users)
 
-  const checkOnline = user => {
-    // return onlineList?.includes(user)
-  }
-  const checkFollowing = userId => {
-    // return user.following?.find(item => item._id === userId)
-  }
   return (
     <div className='w-[350px] h-screen  border-r border-gray-400 pt-[60px] px-4'>
       <div className='flex items-center justify-between px-1'>
@@ -97,16 +113,7 @@ const LeftSide = ({ id }) => {
           onClick={() => setOpenCreateGroup(true)}
         />
       </div>
-      {/* <form action='' className=' px-2 relative '>
-        <input
-          type='text'
-          required
-          className=' rounded-md block w-full h-[40px]  focus:border-blue-500 focus:border focus:outline-none  px-1 bg-gray-100 '
-          placeholder='Search '
-        />
-        <CiSearch className='absolute top-3 right-3' />
-      </form> */}
-      {/* <Search message={true} /> */}
+
       <div className='relative w-full flex items-center '>
         <GrFormPreviousLink
           className={`${
@@ -146,6 +153,34 @@ const LeftSide = ({ id }) => {
           )}
         </div>
       </div>
+      {type !== 'search' && (
+        <div className='w-full flex gap-3 mt-2'>
+          <span
+            onClick={() => {
+              setType('conversations')
+            }}
+            className={`${
+              type === 'conversations'
+                ? ' text-blue-600    bg-blue-100   h-min '
+                : ' hover:bg-gray-200  text-black '
+            }   py-1 px-2  rounded-2xl cursor-pointer`}
+          >
+            Inbox
+          </span>
+          <span
+            onClick={() => {
+              setType('request')
+            }}
+            className={`${
+              type === 'request'
+                ? ' text-blue-600    bg-blue-100   h-min '
+                : ' hover:bg-gray-200  text-black '
+            }   py-1 px-2  rounded-2xl cursor-pointer  `}
+          >
+            Message requests
+          </span>
+        </div>
+      )}
       <div className='w-full  h-[calc(100vh-180px)]  pt-2 scroll-min overflow-y-scroll'>
         {type === 'conversations'
           ? sortedConversations.map(con => {
@@ -163,12 +198,16 @@ const LeftSide = ({ id }) => {
                   // other={other}
                   userId={user?.id}
                   dispatch={dispatch}
-                  online={checkConversationOnline(con, user?.id, onlineUsers)}
+                  online={
+                    checkConversationOnline(con, user?.id, onlineUsers) &&
+                    con?.members?.every(item => item?.active === true)
+                  }
                   // following={checkFollowing(other._id)}
                 />
               )
             })
-          : users.map(
+          : type === 'search'
+          ? users.map(
               item =>
                 item?.id !== user?.id && (
                   <div
@@ -180,7 +219,30 @@ const LeftSide = ({ id }) => {
                     <UserCard user={item} msg={true} />
                   </div>
                 )
-            )}
+            )
+          : sortedRequestConversations.map(con => {
+              // const other = con.members.find(item => item._id !== user._id)
+              return (
+                <ConversationCard
+                  seen={
+                    con?.members?.find(item => item?.userId === user.id)?.isSeen
+                  }
+                  navigate={navigate}
+                  // online={checkOnline(other._id)}
+                  active={id === con.id?.toString()}
+                  conversation={con}
+                  key={con.id}
+                  // other={other}
+                  userId={user?.id}
+                  dispatch={dispatch}
+                  online={
+                    checkConversationOnline(con, user?.id, onlineUsers) &&
+                    con?.members?.every(item => item?.active === true)
+                  }
+                  // following={checkFollowing(other._id)}
+                />
+              )
+            })}
       </div>
       <Invite
         // handleInvite={handleInvite}
@@ -207,7 +269,6 @@ const ConversationCard = ({
   online,
   seen,
   conversation,
-  other,
   active,
   userId,
   navigate
@@ -318,6 +379,12 @@ const Invite = ({ isModalOpen, handleCancel, friends }) => {
 
   const handleInvite = async () => {
     try {
+      dispatch({
+        type: globalTypes.ALERT,
+        payload: {
+          loading: true
+        }
+      })
       const {
         data: { conversation }
       } = await postApi('/conversations', {
@@ -336,9 +403,21 @@ const Invite = ({ isModalOpen, handleCancel, friends }) => {
         message: messageData
       })
       dispatch(addMessage(messageData))
+      dispatch({
+        type: globalTypes.ALERT,
+        payload: {
+          loading: false
+        }
+      })
       navigate('/message/' + conversation?.id)
       handleCancel && handleCancel()
     } catch (error) {
+      dispatch({
+        type: globalTypes.ALERT,
+        payload: {
+          loading: false
+        }
+      })
       toast.error(error)
     }
   }

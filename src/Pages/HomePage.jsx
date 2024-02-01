@@ -40,12 +40,11 @@ const HomePage = () => {
         oldPostIds: posts?.map(item => item.id)
       })
         .then(({ data: { posts: arr } }) => {
-          if (arr.length < 5) setMore(false)
+          if (arr.length < 3) setMore(false)
           dispatch({
             type: postTypes.GET_HOME_POST_SUCCESS,
             payload: [...posts, ...arr]
           })
-          if (arr?.length < 5) setMore(false)
         })
         .catch(err => {
           setMore(false)

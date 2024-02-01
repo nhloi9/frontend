@@ -480,6 +480,7 @@ const SongCard = ({
   // setCurrentSong,
   // play
 }) => {
+  const [duration, setDuration] = useState(null)
   const songRef = useRef()
   const [isPlaying, setIsPlaying] = useState(false)
 
@@ -506,9 +507,16 @@ const SongCard = ({
     }
   }, [activeSong?.id, song?.id])
 
+  const onLoadedMetadata = () => {
+    if (songRef.current) {
+      setDuration(Math.round(songRef.current?.duration))
+    }
+  }
+
   return (
     <div className='w-full group h-[60px] flex items-center relative justify-between hover:bg-gray-300 px-1 rounded-md '>
       <audio
+        onLoadedMetadata={onLoadedMetadata}
         onPlay={handlePlay}
         onPause={handlePause}
         onEnded={handleEnded}
@@ -573,13 +581,12 @@ const SongCard = ({
           </p>
         </div>
       </div>
-      <p className='text-sm text-gray-500'>
-        {String(Math.floor(song?.duration / 60)).padStart(2, '0')}:
-        {String(song?.duration - Math.floor(song?.duration / 60) * 60).padStart(
-          2,
-          '0'
-        )}
-      </p>
+      {duration && (
+        <p className='text-sm text-gray-500'>
+          {String(Math.floor(duration / 60)).padStart(2, '0')}:
+          {String(duration - Math.floor(duration / 60) * 60).padStart(2, '0')}
+        </p>
+      )}
       <div className='absolute hidden group-hover:block right-9 top-[19px]  cursor-pointer'>
         <Tooltip title='Add this audio' color='blue'>
           {

@@ -86,7 +86,7 @@ export const RightSide = () => {
                 </div>
 
                 <div className='my-2 flex  flex-wrap gap-2'>
-                  {suggestions?.slice(0, 20)?.map(item => (
+                  {suggestions?.slice(0, 10)?.map(item => (
                     <FriendCard friend={item} key={item?.id} />
                   ))}
                 </div>

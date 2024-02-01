@@ -30,14 +30,12 @@ import Avatar from '../Home/Avatar'
 const CommentCard = ({ comment, post }) => {
   const editRef = useRef(null)
   const navigate = useNavigate()
-  const likeRef = useRef(null)
   const { user } = useSelector(state => state.auth)
   const dispatch = useDispatch()
 
   const [onEdit, setOnEdit] = useState(false)
   const [openReply, setOpenReply] = useState(false)
   const [readMore, setReadMore] = useState(false)
-  const [isLike, setIsLike] = useState(false)
 
   const myReact = useMemo(() => {
     return comment?.reacts?.find(item => item?.userId === user?.id)
@@ -77,11 +75,6 @@ const CommentCard = ({ comment, post }) => {
     dispatch(deleteCommentAction(comment?.id, post?.id))
   }
 
-  // useEffect(() => {
-  //   if (comment.likes.find(item => item._id === user._id)) {
-  //     setIsLike(true)
-  //   } else setIsLike(false)
-  // }, [setIsLike, user?._id, comment?.likes])
   return (
     <div
       className={`my-2 ${
@@ -304,32 +297,6 @@ const CommentCard = ({ comment, post }) => {
             ''
           )}
         </div>
-        {/* <div
-            className=''
-            ref={likeRef}
-            onClick={() => {
-              likeRef.current.classList.add('pointer-events-none')
-              setTimeout(() => {
-                likeRef.current.classList.remove('pointer-events-none')
-              }, 1000)
-            }}
-          >
-            {isLike ? (
-              <BsHeartFill
-                color='red'
-                size={19}
-                className='cursor-pointer'
-                onClick={handleUnlikeComment}
-              />
-            ) : (
-              <BsHeart
-                size={19}
-                className='cursor-pointer '
-                onClick={handleLikeComment}
-              />
-            )}
-          </div> */}
-        {/* </div> */}
       </div>
       {openReply && (
         <InputComment post={post} comment={comment} setOpen={setOpenReply} />

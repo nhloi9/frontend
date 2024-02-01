@@ -31,6 +31,7 @@ export const addMessage = (message) => async (dispatch, getState) => {
 			conversation.members?.forEach((item) => {
 				if (item?.userId === message.member?.userId) {
 					item.isSeen = true;
+					item.active = true;
 				} else item.isSeen = false;
 			});
 			// if (member) {

@@ -478,7 +478,7 @@ const Info = ({ userInfo, handle, own }) => {
             </span>
           ) : own ? (
             <span className='cursor-pointer' onClick={handle}>
-              add a address
+              +Add a address
             </span>
           ) : (
             <CiLock />
